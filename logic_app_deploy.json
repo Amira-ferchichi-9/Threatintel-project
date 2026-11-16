@@ -1,0 +1,193 @@
+{
+  "$schema": "https://schema.management.azure.com/schemas/2019-04-01/deploymentTemplate.json#",
+  "contentVersion": "1.0.0.0",
+  "parameters": {
+    "workflowName":    { "type": "string", "defaultValue": "la-threatintel-gmail" },
+    "location":        { "type": "string", "defaultValue": "francecentral" },
+    "backendApiUrl":   { "type": "string" },
+    "alertRecipient":  { "type": "string", "defaultValue": "amira.ferchichi@etudiant-enit.utm.tn" },
+    "gmailConnId":     { "type": "string" },
+    "cosmosConnId":    { "type": "string" }
+  },
+  "resources": [
+    {
+      "type": "Microsoft.Logic/workflows",
+      "apiVersion": "2019-05-01",
+      "name": "[parameters('workflowName')]",
+      "location": "[parameters('location')]",
+      "properties": {
+        "state": "Enabled",
+        "parameters": {
+          "$connections": {
+            "value": {
+              "gmail": {
+                "connectionId":   "[parameters('gmailConnId')]",
+                "connectionName": "gmail",
+                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', parameters('location'), '/managedApis/gmail')]"
+              },
+              "documentdb": {
+                "connectionId":   "[parameters('cosmosConnId')]",
+                "connectionName": "documentdb",
+                "id": "[concat('/subscriptions/', subscription().subscriptionId, '/providers/Microsoft.Web/locations/', parameters('location'), '/managedApis/documentdb')]"
+              }
+            }
+          },
+          "backendApiUrl":  { "value": "[parameters('backendApiUrl')]" },
+          "alertRecipient": { "value": "[parameters('alertRecipient')]" }
+        },
+        "definition": {
+          "$schema": "https://schema.management.azure.com/providers/Microsoft.Logic/schemas/2016-06-01/workflowdefinition.json#",
+          "contentVersion": "1.0.0.0",
+          "parameters": {
+            "$connections":   { "type": "Object",  "defaultValue": {} },
+            "backendApiUrl":  { "type": "String",  "defaultValue": "" },
+            "alertRecipient": { "type": "String",  "defaultValue": "" }
+          },
+          "triggers": {
+            "When_a_new_email_arrives": {
+              "type": "ApiConnection",
+              "inputs": {
+                "host": {
+                  "connection": { "name": "@parameters('$connections')['gmail']['connectionId']" }
+                },
+                "method": "get",
+                "path": "/Mail/OnNewEmail",
+                "queries": {
+                  "importance": "Any",
+                  "fetchOnlyWithAttachment": false,
+                  "includeAttachments": true,
+                  "subjectFilter": ""
+                }
+              },
+              "recurrence": { "frequency": "Minute", "interval": 1 },
+              "splitOn": "@triggerBody()?['value']"
+            }
+          },
+          "actions": {
+            "Extract_email_fields": {
+              "type": "Compose",
+              "runAfter": {},
+              "inputs": {
+                "subject":       "@triggerBody()?['Subject']",
+                "from":          "@triggerBody()?['From']",
+                "body":          "@triggerBody()?['Body']",
+                "hasAttachment": "@triggerBody()?['HasAttachment']",
+                "messageId":     "@triggerBody()?['Id']"
+              }
+            },
+            "POST_to_analyze": {
+              "type": "Http",
+              "runAfter": { "Extract_email_fields": ["Succeeded"] },
+              "inputs": {
+                "method": "POST",
+                "uri": "@concat(parameters('backendApiUrl'), '/analyze')",
+                "headers": { "Content-Type": "application/json" },
+                "body": {
+                  "subject":        "@outputs('Extract_email_fields')?['subject']",
+                  "sender":         "@outputs('Extract_email_fields')?['from']",
+                  "body":           "@outputs('Extract_email_fields')?['body']",
+                  "source_folder":  "INBOX",
+                  "has_attachment": "@outputs('Extract_email_fields')?['hasAttachment']",
+                  "message_id":     "@outputs('Extract_email_fields')?['messageId']"
+                },
+                "retryPolicy": { "type": "exponential", "count": 3, "interval": "PT5S" }
+              }
+            },
+            "Parse_verdict_response": {
+              "type": "ParseJson",
+              "runAfter": { "POST_to_analyze": ["Succeeded"] },
+              "inputs": {
+                "content": "@body('POST_to_analyze')",
+                "schema": {
+                  "type": "object",
+                  "properties": {
+                    "email_id":   { "type": "string" },
+                    "timestamp":  { "type": "string" },
+                    "subject":    { "type": "string" },
+                    "sender":     { "type": "string" },
+                    "verdict":    { "type": "string" },
+                    "action":     { "type": "string" },
+                    "score":      { "type": "integer" },
+                    "hard_rule":  { "type": "string" },
+                    "report_url": { "type": "string" },
+                    "agents": {
+                      "type": "object",
+                      "properties": {
+                        "auth":    { "type": "integer" },
+                        "url":     { "type": "integer" },
+                        "nlp":     { "type": "integer" },
+                        "sandbox": { "type": "integer" }
+                      }
+                    }
+                  }
+                }
+              }
+            },
+            "Check_if_DANGER": {
+              "type": "If",
+              "runAfter": { "Parse_verdict_response": ["Succeeded"] },
+              "expression": {
+                "or": [
+                  { "contains": ["@body('Parse_verdict_response')?['verdict']", "DANGER"] },
+                  { "greaterOrEquals": ["@body('Parse_verdict_response')?['score']", 75] }
+                ]
+              },
+              "actions": {
+                "Send_DANGER_alert": {
+                  "type": "ApiConnection",
+                  "inputs": {
+                    "host": {
+                      "connection": { "name": "@parameters('$connections')['gmail']['connectionId']" }
+                    },
+                    "method": "post",
+                    "path": "/Mail",
+                    "body": {
+                      "To": "@parameters('alertRecipient')",
+                      "Subject": "[THREATINTEL ALERT] Dangerous email — score @{body('Parse_verdict_response')?['score']}/100",
+                      "Body": "<h2>ThreatIntel Alert</h2><table><tr><td><b>From</b></td><td>@{body('Parse_verdict_response')?['sender']}</td></tr><tr><td><b>Subject</b></td><td>@{body('Parse_verdict_response')?['subject']}</td></tr><tr><td><b>Score</b></td><td>@{body('Parse_verdict_response')?['score']}/100</td></tr><tr><td><b>Verdict</b></td><td>@{body('Parse_verdict_response')?['verdict']}</td></tr><tr><td><b>Action</b></td><td>@{body('Parse_verdict_response')?['action']}</td></tr><tr><td><b>Agents</b></td><td>AUTH=@{body('Parse_verdict_response')?['agents']?['auth']} URL=@{body('Parse_verdict_response')?['agents']?['url']} NLP=@{body('Parse_verdict_response')?['agents']?['nlp']} SBX=@{body('Parse_verdict_response')?['agents']?['sandbox']}</td></tr></table>",
+                      "IsHtml": true
+                    }
+                  }
+                }
+              },
+              "else": { "actions": {} }
+            },
+            "Store_in_Cosmos_DB": {
+              "type": "ApiConnection",
+              "runAfter": { "Check_if_DANGER": ["Succeeded", "Skipped"] },
+              "inputs": {
+                "host": {
+                  "connection": { "name": "@parameters('$connections')['documentdb']['connectionId']" }
+                },
+                "method": "post",
+                "path": "/dbs/@{encodeURIComponent('pfa_email_threats')}/colls/@{encodeURIComponent('logic_app_events')}/docs",
+                "body": {
+                  "id":         "@{body('Parse_verdict_response')?['email_id']}",
+                  "email_id":   "@{body('Parse_verdict_response')?['email_id']}",
+                  "email_hash": "@{outputs('Extract_email_fields')?['messageId']}",
+                  "timestamp":  "@{body('Parse_verdict_response')?['timestamp']}",
+                  "subject":    "@{outputs('Extract_email_fields')?['subject']}",
+                  "sender":     "@{outputs('Extract_email_fields')?['from']}",
+                  "verdict":    "@{body('Parse_verdict_response')?['verdict']}",
+                  "action":     "@{body('Parse_verdict_response')?['action']}",
+                  "score":      "@body('Parse_verdict_response')?['score']",
+                  "hard_rule":  "@{body('Parse_verdict_response')?['hard_rule']}",
+                  "report_url": "@{body('Parse_verdict_response')?['report_url']}",
+                  "agents":     "@body('Parse_verdict_response')?['agents']",
+                  "source":     "logic_app"
+                }
+              }
+            }
+          },
+          "outputs": {}
+        }
+      }
+    }
+  ],
+  "outputs": {
+    "logicAppId": {
+      "type": "string",
+      "value": "[resourceId('Microsoft.Logic/workflows', parameters('workflowName'))]"
+    }
+  }
+}

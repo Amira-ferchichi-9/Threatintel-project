@@ -1,0 +1,448 @@
+{
+  "generated_at": "2026-04-18T18:40:09",
+  "num_cases": 404,
+  "metrics": {
+    "tp": 131,
+    "tn": 190,
+    "fp": 12,
+    "fn": 71,
+    "accuracy": 0.7945544554455446,
+    "precision": 0.916083916083916,
+    "recall": 0.6485148514851485,
+    "f1": 0.7594202898550725
+  },
+  "confusion_matrix": [
+    [
+      190,
+      12
+    ],
+    [
+      71,
+      131
+    ]
+  ],
+  "false_positives": [
+    {
+      "id": "REAL-A-0021",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['wire transfer', 'bank transfer', 'wire the funds'] LOW=['congratulations', 'your account will be suspended', 'dear customer'] IMPERSONATE=['président directeur', 'message du directeur']"
+    },
+    {
+      "id": "REAL-A-0050",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['do not discuss with anyone', 'do not copy anyone'] LOW=[] IMPERSONATE=['do not copy anyone']"
+    },
+    {
+      "id": "REAL-A-0084",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['international transfer', 'my personal request', 'keep my name out'] LOW=[] IMPERSONATE=['keep my name out']"
+    },
+    {
+      "id": "REAL-A-0096",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_1 (98.7%) | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['i need you to process', 'i need this done today'] LOW=[] IMPERSONATE=[]"
+    },
+    {
+      "id": "REAL-B-0012",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 56,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (95.1%) [sem] | BEC HIGH=['your account has been compromised'] LOW=[] IMPERSONATE=[]"
+    },
+    {
+      "id": "REAL-B-0038",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['wire the funds', 'transfer the funds', 'process this payment'] LOW=[] IMPERSONATE=['i am the ceo', 'i am the cfo']"
+    },
+    {
+      "id": "REAL-B-0050",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 84,
+      "verdict": "🛑 CONTENU MALVEILLANT",
+      "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : PHISHING (93.4%) [sem] | BEC HIGH=['your account has been compromised'] LOW=[] IMPERSONATE=[]"
+    },
+    {
+      "id": "REAL-B-0056",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['google play cards', 'ne parlez à personne', 'gardez le secret'] LOW=[] IMPERSONATE=['directrice générale', 'le directeur vous demande']"
+    },
+    {
+      "id": "REAL-B-0066",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['wire transfer', 'bank transfer', 'wire the funds'] LOW=['act now', 'limited time offer', 'congratulations'] IMPERSONATE=['directeur général', 'directrice générale']"
+    },
+    {
+      "id": "REAL-B-0067",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['routing number', 'routing:', 'international transfer'] LOW=['winner', 'invoice attached'] IMPERSONATE=['acting on my behalf']"
+    },
+    {
+      "id": "REAL-B-0076",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['i need you to process', 'i need this done today', 'click to verify'] LOW=['click here to confirm', 'dear customer'] IMPERSONATE=[]"
+    },
+    {
+      "id": "REAL-B-0094",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 0,
+      "pred_label": 1,
+      "score_nlp": 70,
+      "verdict": "⚠️ CONTENU SUSPECT",
+      "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=['do not discuss with anyone', 'do not discuss this with', 'verify your identity now'] LOW=['act now'] IMPERSONATE=['ne mentionnez pas mon nom', 'agissez en mon nom']"
+    }
+  ],
+  "false_negatives": [
+    {
+      "id": "REAL-A-0102",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0103",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0106",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0110",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0113",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0124",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0126",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0133",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0134",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0137",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0144",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0150",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0164",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0168",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0169",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0172",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0176",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0179",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0183",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0187",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 3,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa neutralisé (texte court : 16 mots) | DistilBERT : SAFE (99.9%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0191",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-A-0193",
+      "source": "phishing_email.csv",
+      "name": "real_mail_a",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0101",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (99.9%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0102",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 31,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : SAFE (100.0%) [sem] | BEC HIGH=[] LOW=['click here to confirm'] IMPERSONATE=[]"
+    },
+    {
+      "id": "REAL-B-0104",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0106",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0107",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 3,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa neutralisé (texte court : 2 mots) | DistilBERT : SAFE (99.7%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0120",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0121",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 3,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa neutralisé (texte court : 2 mots) | DistilBERT : SAFE (99.7%) [sem] | Aucun pattern BEC"
+    },
+    {
+      "id": "REAL-B-0128",
+      "source": "Phishing_Email.csv",
+      "name": "real_mail_b",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_nlp": 40,
+      "verdict": "✅ CONTENU SAIN",
+      "detail": "RoBERTa : LABEL_1 (98.9%) [RÉDUIT 25%] | DistilBERT : PHISHING (100.0%) [sem] | Aucun pattern BEC"
+    }
+  ]
+}

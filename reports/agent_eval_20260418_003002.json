@@ -1,0 +1,588 @@
+{
+  "generated_at": "2026-04-18T00:30:02",
+  "auth": {
+    "agent": "agent_auth",
+    "positive_class": "malicious_or_suspicious_identity",
+    "threshold_rule": "pred=1 if score_auth < 55 else 0",
+    "num_cases": 16,
+    "metrics": {
+      "tp": 5,
+      "tn": 6,
+      "fp": 0,
+      "fn": 5,
+      "accuracy": 0.6875,
+      "precision": 1.0,
+      "recall": 0.5,
+      "f1": 0.6666666666666666
+    },
+    "confusion_matrix": {
+      "labels": [
+        "benign(0)",
+        "malicious(1)"
+      ],
+      "matrix": [
+        [
+          6,
+          0
+        ],
+        [
+          5,
+          5
+        ]
+      ]
+    },
+    "misclassified": [
+      {
+        "id": "AUTH-003",
+        "name": "Usurpation DG via Gmail",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 70,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | Domaine gratuit (gmail.com)"
+      },
+      {
+        "id": "AUTH-006",
+        "name": "Reply-To mismatch",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 55,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine) | ⚠️ Reply-To (frauddesk@pay-out-now.net) ≠ From (vendor@trusted-supplier.com)"
+      },
+      {
+        "id": "AUTH-007",
+        "name": "Return-Path mismatch",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 65,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine) | ⚠️ Return-Path (payment-update.net) ≠ From (acme-corp.com)"
+      },
+      {
+        "id": "AUTH-009",
+        "name": "DKIM alignment casse9",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 60,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | ⚠️ DKIM domain (mailer-thirdparty.com) ≠ From domain (contoso.com) | DMARC ✅ (p=none)"
+      },
+      {
+        "id": "AUTH-010",
+        "name": "SPF alignment casse9",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 65,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | ⚠️ SPF domain (mail-relay-untrusted.net) ≠ From domain (acme-corp.com)"
+      }
+    ],
+    "all_results": [
+      {
+        "id": "AUTH-001",
+        "name": "Le9gitime entreprise, authentification aligne9e",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_auth": 100,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject)"
+      },
+      {
+        "id": "AUTH-002",
+        "name": "Sous-domaine aligne9 le9gitime",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_auth": 90,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)"
+      },
+      {
+        "id": "AUTH-003",
+        "name": "Usurpation DG via Gmail",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 70,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | Domaine gratuit (gmail.com)"
+      },
+      {
+        "id": "AUTH-004",
+        "name": "Homograph domain",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_auth": 0,
+        "verdict": "❌ HOMOGRAPH ATTACK DÉTECTÉ",
+        "detail": "Caractère homographe : 'о' dans microsоft.com"
+      },
+      {
+        "id": "AUTH-005",
+        "name": "Cousin domain (paypa1)",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_auth": 10,
+        "verdict": "❌ COUSIN DOMAIN DÉTECTÉ",
+        "detail": "Cousin domain : 'paypa1.com' ≈ 'paypal.com' (distance=1)"
+      },
+      {
+        "id": "AUTH-006",
+        "name": "Reply-To mismatch",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 55,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine) | ⚠️ Reply-To (frauddesk@pay-out-now.net) ≠ From (vendor@trusted-supplier.com)"
+      },
+      {
+        "id": "AUTH-007",
+        "name": "Return-Path mismatch",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 65,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine) | ⚠️ Return-Path (payment-update.net) ≠ From (acme-corp.com)"
+      },
+      {
+        "id": "AUTH-008",
+        "name": "SPF/DKIM/DMARC fail",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_auth": 0,
+        "verdict": "❌ IDENTITÉ NON VÉRIFIÉE",
+        "detail": "SPF ❌ (fail) | DKIM ❌ (fail) | DMARC ❌"
+      },
+      {
+        "id": "AUTH-009",
+        "name": "DKIM alignment casse9",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 60,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | ⚠️ DKIM domain (mailer-thirdparty.com) ≠ From domain (contoso.com) | DMARC ✅ (p=none)"
+      },
+      {
+        "id": "AUTH-010",
+        "name": "SPF alignment casse9",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_auth": 65,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | ⚠️ SPF domain (mail-relay-untrusted.net) ≠ From domain (acme-corp.com)"
+      },
+      {
+        "id": "AUTH-011",
+        "name": "Newsletter le9gitime avec DMARC none",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_auth": 80,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none)"
+      },
+      {
+        "id": "AUTH-012",
+        "name": "Mail interne sans Reply-To/Return-Path anormal",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_auth": 90,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)"
+      },
+      {
+        "id": "AUTH-013",
+        "name": "Domaine gratuit + exe9cutif anglais",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_auth": 5,
+        "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+        "detail": "Titre exécutif 'chief financial' via domaine gratuit (outlook.com)"
+      },
+      {
+        "id": "AUTH-014",
+        "name": "SPF softfail mais contexte le9gitime",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_auth": 70,
+        "verdict": "⚠️ IDENTITÉ PARTIELLE",
+        "detail": "SPF ⚠️ (softfail) | DKIM ✅ | DMARC ✅ (quarantine)"
+      },
+      {
+        "id": "AUTH-015",
+        "name": "Aucun signal auth + mismatch",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_auth": 0,
+        "verdict": "❌ IDENTITÉ NON VÉRIFIÉE",
+        "detail": "SPF absent | DKIM absent | DMARC absent | ⚠️ Reply-To (secureteam@external-verify.org) ≠ From (finance@unknown-payments.net) | ⚠️ Return-Path (mailer-temp.xyz) ≠ From (unknown-payments.net)"
+      },
+      {
+        "id": "AUTH-016",
+        "name": "DMARC reject enterprise propre",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_auth": 100,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject)"
+      }
+    ]
+  },
+  "nlp": {
+    "agent": "agent_nlp_bec",
+    "positive_class": "malicious_or_suspicious_content",
+    "threshold_rule": "pred=1 if score_nlp >= 45 else 0",
+    "num_cases": 20,
+    "metrics": {
+      "tp": 8,
+      "tn": 5,
+      "fp": 5,
+      "fn": 2,
+      "accuracy": 0.65,
+      "precision": 0.6153846153846154,
+      "recall": 0.8,
+      "f1": 0.6956521739130435
+    },
+    "confusion_matrix": {
+      "labels": [
+        "benign(0)",
+        "malicious(1)"
+      ],
+      "matrix": [
+        [
+          5,
+          5
+        ],
+        [
+          2,
+          8
+        ]
+      ]
+    },
+    "misclassified": [
+      {
+        "id": "NLP-004",
+        "name": "French virement urgent",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_nlp": 25,
+        "score_roberta": 0,
+        "score_distilbert": 0,
+        "score_bec": 100,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : PHISHING (99.7%) | BEC HIGH=['virement urgent', 'virement immédiat', 'ne parlez à personne'] LOW=[]"
+      },
+      {
+        "id": "NLP-005",
+        "name": "Invoice spoof + urgency",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_nlp": 36,
+        "score_roberta": 0,
+        "score_distilbert": 22,
+        "score_bec": 100,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (77.9%) | BEC HIGH=['process this payment', 'updated banking details', 'before end of day'] LOW=['urgent action required', 'invoice attached']"
+      },
+      {
+        "id": "NLP-012",
+        "name": "Invitation e9ve9nement acade9mique",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 49,
+        "score_roberta": 99,
+        "score_distilbert": 45,
+        "score_bec": 0,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (99.9%) | DistilBERT : PHISHING (54.1%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-013",
+        "name": "Newsletter marketing standard",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 56,
+        "score_roberta": 75,
+        "score_distilbert": 79,
+        "score_bec": 0,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (79.4%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-014",
+        "name": "Re9union interne",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 65,
+        "score_roberta": 75,
+        "score_distilbert": 99,
+        "score_bec": 0,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (99.7%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-016",
+        "name": "Message procedural",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 45,
+        "score_roberta": 99,
+        "score_distilbert": 8,
+        "score_bec": 50,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : PHISHING (91.1%) | BEC HIGH=['instruction confidentielle'] LOW=[]"
+      },
+      {
+        "id": "NLP-020",
+        "name": "Support client neutre",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 61,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 66,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (99.8%) | BEC HIGH=['CEO request'] LOW=['dear customer', 'dear user']"
+      }
+    ],
+    "all_results": [
+      {
+        "id": "NLP-001",
+        "name": "Wire transfer urgent confidentiel",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 71,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (99.0%) | BEC HIGH=['wire transfer', 'process an urgent', 'do not discuss this with'] LOW=[]"
+      },
+      {
+        "id": "NLP-002",
+        "name": "Gift cards scam",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 69,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (99.2%) | BEC HIGH=['keep this between us', 'gift card', 'buy gift cards'] LOW=[]"
+      },
+      {
+        "id": "NLP-003",
+        "name": "Reset password phishing",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 65,
+        "score_roberta": 99,
+        "score_distilbert": 18,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : PHISHING (81.4%) | BEC HIGH=['enter your password', 'verify your identity now'] LOW=['your account will be suspended']"
+      },
+      {
+        "id": "NLP-004",
+        "name": "French virement urgent",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_nlp": 25,
+        "score_roberta": 0,
+        "score_distilbert": 0,
+        "score_bec": 100,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : PHISHING (99.7%) | BEC HIGH=['virement urgent', 'virement immédiat', 'ne parlez à personne'] LOW=[]"
+      },
+      {
+        "id": "NLP-005",
+        "name": "Invoice spoof + urgency",
+        "true_label": 1,
+        "pred_label": 0,
+        "score_nlp": 36,
+        "score_roberta": 0,
+        "score_distilbert": 22,
+        "score_bec": 100,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (77.9%) | BEC HIGH=['process this payment', 'updated banking details', 'before end of day'] LOW=['urgent action required', 'invoice attached']"
+      },
+      {
+        "id": "NLP-006",
+        "name": "Forwarded suspicious collaboration",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 69,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (99.6%) | BEC HIGH=['keep this confidential', 'i need this done today', 'instruction confidentielle'] LOW=[]"
+      },
+      {
+        "id": "NLP-007",
+        "name": "Do not discuss + bank details",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 59,
+        "score_roberta": 0,
+        "score_distilbert": 76,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (76.1%) | BEC HIGH=['wire the funds', 'transfer the funds', 'bank account details'] LOW=[]"
+      },
+      {
+        "id": "NLP-008",
+        "name": "Compromised account lure",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 65,
+        "score_roberta": 99,
+        "score_distilbert": 0,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : PHISHING (99.8%) | BEC HIGH=['account number', 'verify your identity now', 'your account has been compromised'] LOW=['act now', 'your account will be suspended']"
+      },
+      {
+        "id": "NLP-009",
+        "name": "Routing number request",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 99,
+        "score_roberta": 99,
+        "score_distilbert": 99,
+        "score_bec": 100,
+        "verdict": "🛑 CONTENU MALVEILLANT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : SAFE (99.2%) | BEC HIGH=['wire transfer', 'bank transfer', 'wire the funds'] LOW=[]"
+      },
+      {
+        "id": "NLP-010",
+        "name": "CEO request",
+        "true_label": 1,
+        "pred_label": 1,
+        "score_nlp": 71,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 100,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (99.9%) | BEC HIGH=['process an urgent', 'keep this between us', 'i need you to process'] LOW=[]"
+      },
+      {
+        "id": "NLP-011",
+        "name": "Accuse9 de re9ception candidature",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_nlp": 0,
+        "score_roberta": 0,
+        "score_distilbert": 0,
+        "score_bec": 0,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (99.5%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-012",
+        "name": "Invitation e9ve9nement acade9mique",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 49,
+        "score_roberta": 99,
+        "score_distilbert": 45,
+        "score_bec": 0,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (99.9%) | DistilBERT : PHISHING (54.1%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-013",
+        "name": "Newsletter marketing standard",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 56,
+        "score_roberta": 75,
+        "score_distilbert": 79,
+        "score_bec": 0,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (79.4%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-014",
+        "name": "Re9union interne",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 65,
+        "score_roberta": 75,
+        "score_distilbert": 99,
+        "score_bec": 0,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) [RÉDUIT 25%] | DistilBERT : SAFE (99.7%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-015",
+        "name": "Confirmation livraison e-commerce",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_nlp": 44,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 0,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (99.9%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-016",
+        "name": "Message procedural",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 45,
+        "score_roberta": 99,
+        "score_distilbert": 8,
+        "score_bec": 50,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_1 (100.0%) | DistilBERT : PHISHING (91.1%) | BEC HIGH=['instruction confidentielle'] LOW=[]"
+      },
+      {
+        "id": "NLP-017",
+        "name": "Automated no-reply le9gitime",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_nlp": 34,
+        "score_roberta": 74,
+        "score_distilbert": 0,
+        "score_bec": 50,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_1 (98.1%) [RÉDUIT 25%] | DistilBERT : PHISHING (99.9%) | BEC HIGH=['complete before end of business'] LOW=[]"
+      },
+      {
+        "id": "NLP-018",
+        "name": "Merci pour votre candidature",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_nlp": 0,
+        "score_roberta": 0,
+        "score_distilbert": 1,
+        "score_bec": 0,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (98.7%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-019",
+        "name": "Communication universitaire",
+        "true_label": 0,
+        "pred_label": 0,
+        "score_nlp": 15,
+        "score_roberta": 0,
+        "score_distilbert": 35,
+        "score_bec": 0,
+        "verdict": "✅ CONTENU SAIN",
+        "detail": "RoBERTa : LABEL_0 (100.0%) [RÉDUIT 25%] | DistilBERT : PHISHING (64.2%) | Aucun pattern BEC"
+      },
+      {
+        "id": "NLP-020",
+        "name": "Support client neutre",
+        "true_label": 0,
+        "pred_label": 1,
+        "score_nlp": 61,
+        "score_roberta": 0,
+        "score_distilbert": 99,
+        "score_bec": 66,
+        "verdict": "⚠️ CONTENU SUSPECT",
+        "detail": "RoBERTa : LABEL_0 (100.0%) | DistilBERT : SAFE (99.8%) | BEC HIGH=['CEO request'] LOW=['dear customer', 'dear user']"
+      }
+    ]
+  }
+}

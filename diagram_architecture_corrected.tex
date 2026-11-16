@@ -1,0 +1,103 @@
+%--- Étape 1 : Email entrant
+\node[boxwide, fill=blue!10] (email) {%
+  \textbf{Email entrant}\\
+  \scriptsize Gmail API · OAuth 2.0 · GCP};
+
+%--- Étape 2 : Orchestrateur
+\node[boxwide, fill=blue!10, below=0.6cm of email] (orches) {%
+  \textbf{Orchestrateur Python asyncio}\\
+  \scriptsize Orchestration des agents · décision du flux};
+
+\draw[arr] (email) -- (orches);
+\node[label, right=0.1cm of orches.east, yshift=0.3cm] {};
+
+%--- Étape 3 : Quatre agents EN PARALLÈLE (dont Sandbox conditionnel)
+\node[label, below=0.35cm of orches] (parlabel) {\textit{Étape 3: Agents en parallèle}};
+
+\node[agent, fill=blue!15, below left=0.8cm and 4cm of orches] (auth) {%
+  \textbf{Agent Auth}\\
+  \scriptsize SPF · DKIM · DMARC\\
+  \scriptsize dnspython\\[4pt]
+  \scriptsize $\rightarrow$ score identité};
+
+\node[agent, fill=blue!15, below left=0.8cm and 1.3cm of orches] (url) {%
+  \textbf{Agent URL}\\
+  \scriptsize VirusTotal API\\
+  \scriptsize Redis cache\\[4pt]
+  \scriptsize $\rightarrow$ score réputation};
+
+\node[agent, fill=blue!15, below right=0.8cm and 1.3cm of orches] (nlp) {%
+  \textbf{Agent NLP+BEC}\\
+  \scriptsize RoBERTa · DistilBERT\\
+  \scriptsize Fuzzy matching BEC\\[4pt]
+  \scriptsize $\rightarrow$ score sémantique};
+
+\node[agent, fill=blue!20, below right=0.8cm and 4cm of orches] (sandbox) {%
+  \textbf{Agent Sandbox}\\
+  \scriptsize (si pièce jointe)\\
+  \scriptsize VM Cloud · ACI\\[2pt]
+  \scriptsize PDF/DOCX/ZIP $\to$ analyse\\
+  \scriptsize SHA256 · Zero Persistence\\[4pt]
+  \scriptsize $\rightarrow$ score sandbox};
+
+\draw[arr] (orches.south) -- ++(0,-0.35) -| (auth.north);
+\draw[arr] (orches.south) -- ++(0,-0.35) -| (url.north);
+\draw[arr] (orches.south) -- ++(0,-0.35) -| (nlp.north);
+\draw[arr] (orches.south) -- ++(0,-0.35) -| (sandbox.north);
+
+%--- Étape 4 : Score préliminaire (fusion des 4 agents)
+\node[boxwide, fill=blue!10, below=2.2cm of url] (scorepreliminaire) {%
+  \textbf{Étape 4: Score préliminaire}\\
+  \scriptsize Agrégation pondérée des 4 scores\\
+  \scriptsize $w_1{\cdot}S_{Auth} + w_2{\cdot}S_{URL} + w_3{\cdot}S_{NLP} + w_4{\cdot}S_{Sandbox}$};
+
+\draw[arr] (auth.south) |- (scorepreliminaire.west);
+\draw[arr] (url.south)  -- (scorepreliminaire.north);
+\draw[arr] (nlp.south)  -- (scorepreliminaire.north);
+\draw[arr] (sandbox.south) |- (scorepreliminaire.east);
+
+%--- Étape 5 : Agent de scoring
+\node[boxwide, fill=blue!10, below=0.8cm of scorepreliminaire] (scoring) {%
+  \textbf{Étape 5: Agent de scoring}\\
+  \scriptsize Random Forest · scikit-learn · numpy\\
+  \scriptsize Règles métier + décision finale};
+
+\draw[arr] (scorepreliminaire) -- (scoring);
+
+%--- Étape 6 : Verdict final
+\node[boxwide, fill=blue!10, below=0.6cm of scoring] (verdict) {%
+  \textbf{Verdict final}\\
+  \scriptsize FastAPI · Rapport SOC HTML / JSON};
+\draw[arr] (scoring) -- (verdict);
+
+%--- Étape 7 : Actions
+\node[box, fill=green!15, below left=0.6cm and 2.8cm of verdict] (sain) {%
+  \textbf{Sain}\\
+  \scriptsize Délivré normalement};
+
+\node[box, fill=orange!20, below=0.6cm of verdict] (suspect) {%
+  \textbf{Suspect}\\
+  \scriptsize Quarantaine + alerte};
+
+\node[box, fill=red!20, below right=0.6cm and 2.8cm of verdict] (danger) {%
+  \textbf{Danger}\\
+  \scriptsize Bloqué + rapport IR};
+
+\draw[arr] (verdict.south) -| (sain.north);
+\draw[arr] (verdict.south) -- (suspect.north);
+\draw[arr] (verdict.south) -| (danger.north);
+
+%--- Étape 8 : Azure Storage
+\node[boxwide, fill=blue!5, below=1.4cm of suspect] (storage) {%
+  \textbf{Azure Storage}\\
+  \scriptsize Cosmos DB · Blob Storage · Redis cache\\
+  \scriptsize Rapports · Pièces jointes · Cache URL};
+
+\draw[arr] (sain.south)    |- (storage.west);
+\draw[arr] (suspect.south) -- (storage.north);
+\draw[arr] (danger.south)  |- (storage.east);
+
+\end{tikzpicture}
+\caption{Architecture ThreatIntel — Étape 3: les 4 agents (Auth, URL, NLP+BEC, Sandbox) tournent en parallèle. Sandbox est lancé conditionnellement s'il y a pièce jointe. Étape 4: fusion des scores. Étape 5: scoring final et décision.}
+\label{fig:workflow-threatintel-v2}
+\end{figure}

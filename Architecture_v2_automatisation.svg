@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<svg width="100%" viewBox="0 0 720 1295" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <marker id="arrow" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+    <path d="M2 1L8 5L2 9" fill="none" stroke="context-stroke" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+  </marker>
+</defs>
+<rect x="0" y="0" width="720" height="1295" fill="#FFFFFF"/>
+
+<!-- Step numbers  (0-11) -->
+<text x="14" y="46"   text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">0</text>
+<text x="14" y="136"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">1</text>
+<text x="14" y="218"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">2</text>
+<text x="14" y="345"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">3</text>
+<text x="14" y="460"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">4</text>
+<text x="14" y="565"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">5</text>
+<text x="14" y="771"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">6</text>
+<text x="14" y="858"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">7</text>
+<text x="14" y="944"  text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">8</text>
+<text x="14" y="1046" text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">9</text>
+<text x="14" y="1143" text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">10</text>
+<text x="14" y="1240" text-anchor="middle" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif" font-size="12">11</text>
+
+<!-- ── STEP 0 : Planificateur automatique ── -->
+<rect x="175" y="20" width="330" height="52" rx="6" fill="#D4EAFF" stroke="#7BB8D8" stroke-width="0.5"/>
+<rect x="175" y="20" width="4"   height="52" rx="2" fill="#3A8DBF"/>
+<text x="352" y="40" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Planificateur automatique</text>
+<text x="352" y="58" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Azure Logic Apps · CRON · Event Grid</text>
+
+<line x1="340" y1="72" x2="340" y2="110" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 1 : Extension Chrome  +  Email entrant ── -->
+<rect x="25"  y="110" width="165" height="52" rx="6" fill="#EAF4FF" stroke="#A8CCE8" stroke-width="0.5"/>
+<rect x="25"  y="110" width="4"   height="52" rx="2" fill="#6AAED6"/>
+<text x="117" y="130" text-anchor="middle" dominant-baseline="central" font-size="13" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Extension Chrome</text>
+<text x="117" y="148" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Popup UI · Email capture</text>
+
+<rect x="215" y="110" width="250" height="52" rx="6" fill="#EAF4FF" stroke="#A8CCE8" stroke-width="0.5"/>
+<rect x="215" y="110" width="4"   height="52" rx="2" fill="#6AAED6"/>
+<text x="348" y="130" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Email entrant</text>
+<text x="348" y="148" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Gmail API · OAuth 2.0 · GCP</text>
+
+<path d="M107 162 L225 190" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<line x1="340" y1="162" x2="340" y2="190" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 2 : Orchestrateur ── -->
+<rect x="175" y="190" width="330" height="52" rx="6" fill="#D4EAFF" stroke="#7BB8D8" stroke-width="0.5"/>
+<rect x="175" y="190" width="4"   height="52" rx="2" fill="#3A8DBF"/>
+<text x="352" y="210" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Orchestrateur Python asyncio</text>
+<text x="352" y="228" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Orchestration des agents · décision du flux</text>
+
+<text x="340" y="262" text-anchor="middle" fill="#93B4C8" font-size="12" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">agents en parallèle</text>
+<path d="M340 268 L130 298" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<line x1="340" y1="268" x2="340" y2="298" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<path d="M340 268 L550 298" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 3 : 3 agents ── -->
+<rect x="30"  y="298" width="195" height="86" rx="6" fill="#BDD9F2" stroke="#5C9DC2" stroke-width="0.5"/>
+<rect x="30"  y="298" width="4"   height="86" rx="2" fill="#2A7AAD"/>
+<text x="130" y="318" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Agent Auth</text>
+<text x="130" y="338" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">SPF · DKIM · DMARC</text>
+<text x="130" y="356" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">dnspython</text>
+<text x="130" y="374" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A5F8A" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">→ score identité</text>
+
+<rect x="245" y="298" width="190" height="86" rx="6" fill="#D4EAFF" stroke="#7BB8D8" stroke-width="0.5"/>
+<rect x="245" y="298" width="4"   height="86" rx="2" fill="#3A8DBF"/>
+<text x="347" y="318" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Agent URL</text>
+<text x="347" y="338" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">VirusTotal API</text>
+<text x="347" y="356" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Redis cache</text>
+<text x="347" y="374" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A5F8A" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">→ score réputation</text>
+
+<rect x="455" y="298" width="195" height="86" rx="6" fill="#A5C8E8" stroke="#4A87B5" stroke-width="0.5"/>
+<rect x="455" y="298" width="4"   height="86" rx="2" fill="#1A6699"/>
+<text x="560" y="318" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Agent NLP+BEC</text>
+<text x="560" y="338" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">RoBERTa · DistilBERT</text>
+<text x="560" y="356" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Fuzzy matching BEC</text>
+<text x="560" y="374" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A5F8A" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">→ score sémantique</text>
+
+<path d="M130 384 L290 428" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<line x1="340" y1="384" x2="340" y2="428" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<path d="M557 384 L390 428" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 4 : Score préliminaire ── -->
+<rect x="175" y="428" width="330" height="62" rx="6" fill="#EAF4FF" stroke="#A8CCE8" stroke-width="0.5"/>
+<rect x="175" y="428" width="4"   height="62" rx="2" fill="#6AAED6"/>
+<text x="352" y="448" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Score préliminaire</text>
+<text x="352" y="466" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">PJ présente dans l'email ?</text>
+<text x="352" y="482" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">PDF · DOCX · XLSX · ZIP uniquement</text>
+
+<path d="M280 490 L170 530" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<path d="M400 490 L510 530" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<text x="205" y="518" text-anchor="middle" fill="#3A8DBF" font-size="12" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">oui</text>
+<text x="478" y="518" text-anchor="middle" fill="#93B4C8" font-size="12" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">non</text>
+
+<!-- ── STEP 5a : Sandbox Docker ── -->
+<rect x="30" y="530" width="290" height="158" rx="8" stroke-width="0.8" stroke="#4A87B5" fill="#EAF4FF" stroke-dasharray="5 3"/>
+<text x="175" y="548" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A5F8A" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Docker · VM éphémère</text>
+
+<rect x="45"  y="558" width="260" height="118" rx="6" fill="#8FBBD8" stroke="#3A7AA8" stroke-width="0.5"/>
+<rect x="45"  y="558" width="4"   height="118" rx="2" fill="#0D5585"/>
+<text x="187" y="578" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0D2E45" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Analyse dynamique</text>
+<text x="187" y="596" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">PDF → liens · JavaScript · exploit reader</text>
+<text x="187" y="612" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">DOCX/XLSX → macros VBA · PowerShell</text>
+<text x="187" y="628" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">ZIP → extraction · analyse récursive</text>
+<text x="187" y="644" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">python:3.11-slim · Azure Container Instance</text>
+<text x="187" y="660" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Analyse statique · SHA256 · Zero Persistence</text>
+<text x="175" y="682" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">VM détruite · Zero Persistence</text>
+
+<!-- ── STEP 5b : Pas de PJ ── -->
+<rect x="380" y="558" width="260" height="52" rx="6" fill="#EAF4FF" stroke="#A8CCE8" stroke-width="0.5"/>
+<rect x="380" y="558" width="4"   height="52" rx="2" fill="#6AAED6"/>
+<text x="522" y="576" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Pas de PJ</text>
+<text x="522" y="594" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Score direct au fusion</text>
+
+<path d="M175 690 L300 738" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<path d="M510 610 L390 738" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 6 : Agent de scoring ── -->
+<rect x="155" y="738" width="370" height="66" rx="6" fill="#BDD9F2" stroke="#5C9DC2" stroke-width="0.5"/>
+<rect x="155" y="738" width="4"   height="66" rx="2" fill="#2A7AAD"/>
+<text x="352" y="758" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Agent de scoring</text>
+<text x="352" y="776" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">w1·Auth + w2·URL + w3·NLP+BEC + w4·Sandbox</text>
+<text x="352" y="792" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Random Forest · scikit-learn · numpy</text>
+<line x1="340" y1="804" x2="340" y2="832" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 7 : Verdict final ── -->
+<rect x="175" y="832" width="330" height="52" rx="6" fill="#D4EAFF" stroke="#7BB8D8" stroke-width="0.5"/>
+<rect x="175" y="832" width="4"   height="52" rx="2" fill="#3A8DBF"/>
+<text x="352" y="852" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Verdict final</text>
+<text x="352" y="870" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">FastAPI · Rapport SOC HTML · JSON</text>
+
+<path d="M250 884 L130 918" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<line x1="340" y1="884" x2="340" y2="918" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<path d="M430 884 L550 918" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 8 : Verdicts ── -->
+<rect x="50"  y="918" width="155" height="52" rx="6" fill="#EAF4FF" stroke="#A8CCE8" stroke-width="0.5"/>
+<rect x="50"  y="918" width="4"   height="52" rx="2" fill="#6AAED6"/>
+<text x="135" y="938" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Sain</text>
+<text x="135" y="956" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Délivré normalement</text>
+
+<rect x="263" y="918" width="155" height="52" rx="6" fill="#BDD9F2" stroke="#5C9DC2" stroke-width="0.5"/>
+<rect x="263" y="918" width="4"   height="52" rx="2" fill="#2A7AAD"/>
+<text x="348" y="938" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Suspect</text>
+<text x="348" y="956" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Quarantaine + alerte</text>
+
+<rect x="476" y="918" width="155" height="52" rx="6" fill="#8FBBD8" stroke="#3A7AA8" stroke-width="0.5"/>
+<rect x="476" y="918" width="4"   height="52" rx="2" fill="#0D5585"/>
+<text x="561" y="938" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#0D2E45" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Danger</text>
+<text x="561" y="956" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Bloqué + rapport IR</text>
+
+<!-- Arrows → Azure Storage -->
+<path d="M127 970 L255 1010" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<line x1="340" y1="970" x2="340" y2="1010" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+<path d="M553 970 L425 1010" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 9 : Azure Storage ── -->
+<rect x="155" y="1010" width="370" height="72" rx="6" fill="#BDD9F2" stroke="#5C9DC2" stroke-width="0.5"/>
+<rect x="155" y="1010" width="4"   height="72" rx="2" fill="#2A7AAD"/>
+<text x="352" y="1032" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Azure Storage</text>
+<text x="352" y="1050" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Cosmos DB · Blob Storage · Redis cache</text>
+<text x="352" y="1068" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Rapports · Pièces jointes · Cache URL</text>
+
+<line x1="340" y1="1082" x2="340" y2="1112" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 10 : Capture d'écran ── -->
+<rect x="155" y="1112" width="370" height="62" rx="6" fill="#A5C8E8" stroke="#4A87B5" stroke-width="0.5"/>
+<rect x="155" y="1112" width="4"   height="62" rx="2" fill="#1A6699"/>
+<text x="352" y="1132" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Capture d'écran</text>
+<text x="352" y="1150" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Playwright · HTML snapshot · PNG · Rapport visuel</text>
+
+<line x1="340" y1="1174" x2="340" y2="1204" stroke="#93B4C8" stroke-width="0.8" marker-end="url(#arrow)" fill="none"/>
+
+<!-- ── STEP 11 : Actions automatiques ── -->
+<rect x="155" y="1204" width="370" height="72" rx="6" fill="#D4EAFF" stroke="#7BB8D8" stroke-width="0.5"/>
+<rect x="155" y="1204" width="4"   height="72" rx="2" fill="#3A8DBF"/>
+<text x="352" y="1226" text-anchor="middle" dominant-baseline="central" font-size="14" font-weight="500" fill="#1A3A52" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Actions automatiques</text>
+<text x="352" y="1244" text-anchor="middle" dominant-baseline="central" font-size="12" fill="#4A7A9B" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Auto-quarantaine · Export SIEM · Ticket IR</text>
+<text x="352" y="1262" text-anchor="middle" dominant-baseline="central" font-size="11" fill="#93B4C8" font-family="'Anthropic Sans',-apple-system,BlinkMacSystemFont,'Segoe UI',sans-serif">Azure Logic Apps · webhook · rapport admin</text>
+
+</svg>

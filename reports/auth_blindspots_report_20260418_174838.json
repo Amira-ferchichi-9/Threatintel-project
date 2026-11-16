@@ -1,0 +1,360 @@
+{
+  "generated_at": "2026-04-18T17:48:38",
+  "agent": "agent_auth",
+  "campaign": "blindspots_targeted",
+  "decision_rule": "pred=1 if score_auth < 55 else 0",
+  "num_cases": 12,
+  "num_malicious": 10,
+  "num_benign": 2,
+  "metrics": {
+    "tp": 8,
+    "tn": 2,
+    "fp": 0,
+    "fn": 2,
+    "accuracy": 0.8333333333333334,
+    "precision": 1.0,
+    "recall": 0.8,
+    "f1": 0.888888888888889
+  },
+  "confusion_matrix": {
+    "labels": [
+      "benign(0)",
+      "malicious(1)"
+    ],
+    "matrix": [
+      [
+        2,
+        0
+      ],
+      [
+        2,
+        8
+      ]
+    ]
+  },
+  "by_angle": {
+    "exotic_tld_deceptive": {
+      "total": 2,
+      "fn": 0,
+      "fp": 0,
+      "malicious": 2,
+      "benign": 0
+    },
+    "arabic_rtl_display_name": {
+      "total": 2,
+      "fn": 0,
+      "fp": 0,
+      "malicious": 2,
+      "benign": 0
+    },
+    "no_display_name_spoof": {
+      "total": 2,
+      "fn": 0,
+      "fp": 0,
+      "malicious": 2,
+      "benign": 0
+    },
+    "compromised_legit_relay": {
+      "total": 2,
+      "fn": 2,
+      "fp": 0,
+      "malicious": 2,
+      "benign": 0
+    },
+    "subtle_multi_signal_combo": {
+      "total": 2,
+      "fn": 0,
+      "fp": 0,
+      "malicious": 2,
+      "benign": 0
+    },
+    "control_benign": {
+      "total": 2,
+      "fn": 0,
+      "fp": 0,
+      "malicious": 0,
+      "benign": 2
+    }
+  },
+  "false_negatives": [
+    {
+      "id": "B-REL-001",
+      "angle": "compromised_legit_relay",
+      "name": "Legit corporate domain with all pass (possible account takeover)",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_auth": 100,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE — ⚠️ REVUE BEC RECOMMANDÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject) | ℹ️ HVT — revue BEC requise : High-Value Target : signal exec (display) sur domaine corporate 'acme-corp.com' — possible compromised relay",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-REL-002",
+      "angle": "compromised_legit_relay",
+      "name": "Compromised shared provider scenario (all pass)",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_auth": 90,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    }
+  ],
+  "false_positives": [],
+  "vulnerabilities": [
+    {
+      "id": "B-REL-001",
+      "angle": "compromised_legit_relay",
+      "risk": "high",
+      "issue": "Blindspot bypass (malicious sample not blocked)",
+      "evidence": {
+        "score_auth": 100,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE — ⚠️ REVUE BEC RECOMMANDÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject) | ℹ️ HVT — revue BEC requise : High-Value Target : signal exec (display) sur domaine corporate 'acme-corp.com' — possible compromised relay",
+        "signals": {
+          "exec_spoofing": false,
+          "reply_to_mismatch": false,
+          "return_path_mismatch": false,
+          "homograph": false,
+          "cousin_domain": false
+        }
+      }
+    },
+    {
+      "id": "B-REL-002",
+      "angle": "compromised_legit_relay",
+      "risk": "high",
+      "issue": "Blindspot bypass (malicious sample not blocked)",
+      "evidence": {
+        "score_auth": 90,
+        "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+        "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+        "signals": {
+          "exec_spoofing": false,
+          "reply_to_mismatch": false,
+          "return_path_mismatch": false,
+          "homograph": false,
+          "cousin_domain": false
+        }
+      }
+    }
+  ],
+  "all_results": [
+    {
+      "id": "B-EXO-001",
+      "angle": "exotic_tld_deceptive",
+      "name": "Brand in long deceptive domain",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 40,
+      "verdict": "🔶 IDENTITÉ FAIBLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | ⚠️ Return-Path (mailer.phish.xyz) ≠ From (acme-corp.com.phish.xyz)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": true,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-EXO-002",
+      "angle": "exotic_tld_deceptive",
+      "name": "Corporate lookalike on deceptive TLD",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 15,
+      "verdict": "❌ TLD/DOMAINE SUSPECT (PHISHING)",
+      "detail": "TLD suspect '.click' + token ingénierie sociale ['secure', 'mail'] dans 'acme-corp.secure-mail.click'",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-RTL-001",
+      "angle": "arabic_rtl_display_name",
+      "name": "Arabic executive title + free mail",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif arabe 'المدير المالي' via domaine gratuit (gmail.com)",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-RTL-002",
+      "angle": "arabic_rtl_display_name",
+      "name": "Mixed RTL/LTR executive spoof",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'ceo' via domaine gratuit (outlook.com) [display: 'مدير CEO']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-NODISP-001",
+      "angle": "no_display_name_spoof",
+      "name": "No display name, free domain ceo alias",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 8,
+      "verdict": "❌ USURPATION EXÉCUTIVE LOCALE (BEC)",
+      "detail": "Partie locale exec 'ceo' dans 'ceo.request@gmail.com' via domaine gratuit (gmail.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-NODISP-002",
+      "angle": "no_display_name_spoof",
+      "name": "No display, executive keyword in local-part",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 8,
+      "verdict": "❌ USURPATION EXÉCUTIVE LOCALE (BEC)",
+      "detail": "Partie locale exec 'chief' dans 'chief.financial.office@gmail.com' via domaine gratuit (gmail.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-REL-001",
+      "angle": "compromised_legit_relay",
+      "name": "Legit corporate domain with all pass (possible account takeover)",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_auth": 100,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE — ⚠️ REVUE BEC RECOMMANDÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject) | ℹ️ HVT — revue BEC requise : High-Value Target : signal exec (display) sur domaine corporate 'acme-corp.com' — possible compromised relay",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-REL-002",
+      "angle": "compromised_legit_relay",
+      "name": "Compromised shared provider scenario (all pass)",
+      "true_label": 1,
+      "pred_label": 0,
+      "score_auth": 90,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-MULTI-001",
+      "angle": "subtle_multi_signal_combo",
+      "name": "Cousin token + bestguesspass + return-path mismatch",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 10,
+      "verdict": "❌ COUSIN DOMAIN DÉTECTÉ",
+      "detail": "Cousin domain : token 'paypa1' dans 'secure-paypa1-login.com' ≈ 'paypal.com' (distance=1)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": true,
+        "homograph": false,
+        "cousin_domain": true
+      }
+    },
+    {
+      "id": "B-MULTI-002",
+      "angle": "subtle_multi_signal_combo",
+      "name": "No display + deceptive TLD + bestguesspass",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 50,
+      "verdict": "🔶 IDENTITÉ FAIBLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ⚠️ (bestguesspass — non fiable)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-CTRL-001",
+      "angle": "control_benign",
+      "name": "Legit corporate strict auth",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 100,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "B-CTRL-002",
+      "angle": "control_benign",
+      "name": "Legit free-mail personal sender",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 70,
+      "verdict": "⚠️ IDENTITÉ PARTIELLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | Domaine gratuit (gmail.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    }
+  ]
+}

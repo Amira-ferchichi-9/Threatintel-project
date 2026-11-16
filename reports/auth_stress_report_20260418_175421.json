@@ -1,0 +1,681 @@
+{
+  "generated_at": "2026-04-18T17:54:21",
+  "agent": "agent_auth",
+  "decision_rule": "pred=1 if score_auth < 55 else 0",
+  "num_cases": 29,
+  "num_malicious": 18,
+  "num_benign": 11,
+  "metrics": {
+    "tp": 18,
+    "tn": 11,
+    "fp": 0,
+    "fn": 0,
+    "accuracy": 1.0,
+    "precision": 1.0,
+    "recall": 1.0,
+    "f1": 1.0
+  },
+  "confusion_matrix": {
+    "labels": [
+      "benign(0)",
+      "malicious(1)"
+    ],
+    "matrix": [
+      [
+        11,
+        0
+      ],
+      [
+        0,
+        18
+      ]
+    ]
+  },
+  "false_negatives": [],
+  "false_positives": [],
+  "category_stats": {
+    "benign_baseline": {
+      "total": 4,
+      "malicious": 0,
+      "benign": 4,
+      "fn": 0,
+      "fp": 0
+    },
+    "benign_edge": {
+      "total": 2,
+      "malicious": 0,
+      "benign": 2,
+      "fn": 0,
+      "fp": 0
+    },
+    "homograph": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "cousin_domain": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "executive_free_domain": {
+      "total": 2,
+      "malicious": 2,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "reply_to_trap": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "return_path_mismatch": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "auth_fail_combo": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "alignment_attack": {
+      "total": 2,
+      "malicious": 2,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "auth_absent_combo": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_display_obfuscation": {
+      "total": 2,
+      "malicious": 2,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_punycode": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_cousin_root": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_replyto_same_domain": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_dmarc_bestguesspass": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_arc_source": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "evasion_header_parse": {
+      "total": 1,
+      "malicious": 1,
+      "benign": 0,
+      "fn": 0,
+      "fp": 0
+    },
+    "benign_consumer": {
+      "total": 2,
+      "malicious": 0,
+      "benign": 2,
+      "fn": 0,
+      "fp": 0
+    },
+    "benign_marketing": {
+      "total": 1,
+      "malicious": 0,
+      "benign": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "benign_shared_infra": {
+      "total": 1,
+      "malicious": 0,
+      "benign": 1,
+      "fn": 0,
+      "fp": 0
+    },
+    "benign_arc": {
+      "total": 1,
+      "malicious": 0,
+      "benign": 1,
+      "fn": 0,
+      "fp": 0
+    }
+  },
+  "vulnerabilities": [],
+  "all_results": [
+    {
+      "id": "A-B-001",
+      "name": "Enterprise strict auth",
+      "category": "benign_baseline",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 100,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-B-002",
+      "name": "Subdomain aligned",
+      "category": "benign_baseline",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 90,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-B-003",
+      "name": "Legit newsletter p=none",
+      "category": "benign_baseline",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 80,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-B-004",
+      "name": "Institutional domain",
+      "category": "benign_baseline",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 90,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-B-005",
+      "name": "Softfail but otherwise clean",
+      "category": "benign_edge",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 70,
+      "verdict": "⚠️ IDENTITÉ PARTIELLE",
+      "detail": "SPF ⚠️ (softfail) | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-B-006",
+      "name": "No reply-to return-path but strict pass",
+      "category": "benign_edge",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 100,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (reject)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-001",
+      "name": "Homograph microsoft",
+      "category": "homograph",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 0,
+      "verdict": "❌ HOMOGRAPH ATTACK DÉTECTÉ",
+      "detail": "Caractère homographe : 'о' dans microsоft.com",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": true,
+        "cousin_domain": true
+      }
+    },
+    {
+      "id": "A-M-002",
+      "name": "Cousin domain paypa1",
+      "category": "cousin_domain",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 10,
+      "verdict": "❌ COUSIN DOMAIN DÉTECTÉ",
+      "detail": "Cousin domain : token 'paypa1' dans 'paypa1.com' ≈ 'paypal.com' (distance=1)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": true
+      }
+    },
+    {
+      "id": "A-M-003",
+      "name": "Executive spoof EN free domain",
+      "category": "executive_free_domain",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'chief financial' via domaine gratuit (outlook.com) [display: 'Chief Financial Officer']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-004",
+      "name": "Executive spoof FR accent",
+      "category": "executive_free_domain",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'directeur general' via domaine gratuit (gmail.com) [display: 'Directeur general']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-005",
+      "name": "Reply-to trap",
+      "category": "reply_to_trap",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 25,
+      "verdict": "❌ REPLY-TO PIÉGÉ",
+      "detail": "Reply-To (frauddesk@pay-out-now.net) ≠ From (vendor@trusted-supplier.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": true,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-006",
+      "name": "Return-path mismatch",
+      "category": "return_path_mismatch",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 50,
+      "verdict": "🔶 IDENTITÉ FAIBLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine) | ⚠️ Return-Path (payment-update.net) ≠ From (acme-corp.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": true,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-007",
+      "name": "SPF DKIM DMARC fail",
+      "category": "auth_fail_combo",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 15,
+      "verdict": "❌ TLD/DOMAINE SUSPECT (PHISHING)",
+      "detail": "Tokens d'ingénierie sociale multiples ['secure', 'alert'] dans 'bank-secure-alert.com'",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-008",
+      "name": "DKIM misalignment",
+      "category": "alignment_attack",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 45,
+      "verdict": "🔶 IDENTITÉ FAIBLE",
+      "detail": "SPF ✅ | DKIM ✅ | ⚠️ DKIM domain (mailer-thirdparty.com) ≠ From domain (contoso.com) | DMARC ✅ (p=none)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-009",
+      "name": "SPF misalignment",
+      "category": "alignment_attack",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 50,
+      "verdict": "🔶 IDENTITÉ FAIBLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | ⚠️ SPF domain (mail-relay-untrusted.net) ≠ From domain (acme-corp.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-M-010",
+      "name": "No auth + dual mismatch",
+      "category": "auth_absent_combo",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 25,
+      "verdict": "❌ REPLY-TO PIÉGÉ",
+      "detail": "Reply-To (secureteam@external-verify.org) ≠ From (finance@unknown-payments.net)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": true,
+        "return_path_mismatch": true,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-E-001",
+      "name": "Exec obfuscated with digit",
+      "category": "evasion_display_obfuscation",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'chief financial' via domaine gratuit (gmail.com) [display: 'Chief F1nancial Officer']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-E-002",
+      "name": "Exec abbreviation punctuated",
+      "category": "evasion_display_obfuscation",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'dg' via domaine gratuit (gmail.com) [display: 'D.G.']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-E-003",
+      "name": "Punycode brand spoof",
+      "category": "evasion_punycode",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 0,
+      "verdict": "❌ HOMOGRAPH ATTACK DÉTECTÉ",
+      "detail": "Domaine IDN/punycode suspect : 'xn--micrsft-5za.com' → 'miñcrsft.com'",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": true,
+        "cousin_domain": true
+      }
+    },
+    {
+      "id": "A-E-004",
+      "name": "Long cousin root evasion",
+      "category": "evasion_cousin_root",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 10,
+      "verdict": "❌ COUSIN DOMAIN DÉTECTÉ",
+      "detail": "Cousin domain : token 'paypa1' dans 'secure-paypa1-login.com' ≈ 'paypal.com' (distance=1)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": true
+      }
+    },
+    {
+      "id": "A-E-005",
+      "name": "Reply-to same domain trap",
+      "category": "evasion_replyto_same_domain",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 45,
+      "verdict": "🔶 REPLY-TO SUSPECT (même domaine)",
+      "detail": "Reply-To suspect même domaine : 'payment-update@trusted-supplier.com' (mot-clé 'update' détecté)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-E-006",
+      "name": "DMARC bestguesspass header",
+      "category": "evasion_dmarc_bestguesspass",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 50,
+      "verdict": "🔶 IDENTITÉ FAIBLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ⚠️ (bestguesspass — non fiable)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-E-007",
+      "name": "ARC only weak signal",
+      "category": "evasion_arc_source",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'ceo' via domaine gratuit (gmail.com) [display: 'CEO']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-E-008",
+      "name": "From parse unusual format",
+      "category": "evasion_header_parse",
+      "true_label": 1,
+      "pred_label": 1,
+      "score_auth": 5,
+      "verdict": "❌ USURPATION EXÉCUTIVE (BEC)",
+      "detail": "Titre exécutif 'ceo' via domaine gratuit (outlook.com) [display: 'CEO']",
+      "signals": {
+        "exec_spoofing": true,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-N-001",
+      "name": "Consumer sender no executive",
+      "category": "benign_consumer",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 70,
+      "verdict": "⚠️ IDENTITÉ PARTIELLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | Domaine gratuit (gmail.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-N-002",
+      "name": "Freelancer from outlook",
+      "category": "benign_consumer",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 70,
+      "verdict": "⚠️ IDENTITÉ PARTIELLE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none) | Domaine gratuit (outlook.com)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-N-003",
+      "name": "Subdomain marketing sender",
+      "category": "benign_marketing",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 80,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (p=none)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-N-004",
+      "name": "Shared infra with aligned dkim",
+      "category": "benign_shared_infra",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 90,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    },
+    {
+      "id": "A-N-005",
+      "name": "Noisy but legitimate arc",
+      "category": "benign_arc",
+      "true_label": 0,
+      "pred_label": 0,
+      "score_auth": 90,
+      "verdict": "✅ IDENTITÉ VÉRIFIÉE",
+      "detail": "SPF ✅ | DKIM ✅ | DMARC ✅ (quarantine)",
+      "signals": {
+        "exec_spoofing": false,
+        "reply_to_mismatch": false,
+        "return_path_mismatch": false,
+        "homograph": false,
+        "cousin_domain": false
+      }
+    }
+  ]
+}

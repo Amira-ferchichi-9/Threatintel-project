@@ -1,0 +1,57 @@
+{
+  "name": "threatintel-dashboard",
+  "displayName": "ThreatIntel",
+  "description": "Email threat analysis security dashboard",
+  "version": "0.1.0",
+  "publisher": "threatintel",
+  "engines": {
+    "vscode": "^1.85.0"
+  },
+  "categories": [
+    "Other"
+  ],
+  "activationEvents": [],
+  "main": "./out/extension.js",
+  "contributes": {
+    "commands": [
+      {
+        "command": "threatintel.openDashboard",
+        "title": "Open Security Dashboard",
+        "category": "ThreatIntel"
+      },
+      {
+        "command": "threatintel.refreshDashboard",
+        "title": "Refresh Dashboard",
+        "category": "ThreatIntel"
+      },
+      {
+        "command": "threatintel.openVerdicts",
+        "title": "Open Latest Verdicts Panel",
+        "category": "ThreatIntel"
+      }
+    ],
+    "keybindings": [
+      {
+        "command": "threatintel.openDashboard",
+        "key": "ctrl+shift+t",
+        "mac": "cmd+shift+t"
+      },
+      {
+        "command": "threatintel.openVerdicts",
+        "key": "ctrl+shift+v",
+        "mac": "cmd+shift+v"
+      }
+    ]
+  },
+  "scripts": {
+    "vscode:prepublish": "npm run compile",
+    "compile": "tsc -p ./",
+    "watch": "tsc -watch -p ./"
+  },
+  "devDependencies": {
+    "@types/node": "^20.11.0",
+    "@types/vscode": "^1.85.0",
+    "docx": "^9.6.1",
+    "typescript": "^5.3.3"
+  }
+}

@@ -1,0 +1,17 @@
+azure-functions
+azure-servicebus
+azure-cosmos
+azure-storage-blob
+google-api-python-client
+google-auth-httplib2
+google-auth-oauthlib
+transformers==4.40.0
+torch==2.2.2
+python-dotenv
+requests
+beautifulsoup4
+python-docx
+Jinja2
+dnspython
+rapidfuzz
+tranco

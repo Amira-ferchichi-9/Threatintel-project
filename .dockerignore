@@ -1,0 +1,52 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.egg-info/
+dist/
+build/
+.eggs/
+
+# Environnements virtuels
+venv/
+env/
+.env
+.venv/
+
+# VS Code
+.vscode/
+
+# Git
+.git/
+.gitignore
+
+# Logs & données temporaires
+*.log
+*.tmp
+logs/
+
+# Notebooks
+*.ipynb
+.ipynb_checkpoints/
+
+# Modèles ML lourds (on les charge depuis Blob/HuggingFace au runtime)
+*.bin
+*.pt
+*.pth
+*.safetensors
+models/
+
+# Datasets
+*.csv
+*.json
+data/
+
+# Docker lui-même
+Dockerfile
+.dockerignore
+
+# Tests
+tests/
+test_*/

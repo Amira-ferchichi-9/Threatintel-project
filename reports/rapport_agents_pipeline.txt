@@ -1,0 +1,519 @@
+RAPPORT TEXTE - FONCTIONNEMENT DES AGENTS ET CALCUL DES SCORES
+
+1. Objectif du pipeline
+
+Le systeme est compose de cinq agents specialises. Chaque agent produit un score partiel sur 0 a 100, puis l'agent scoring fusionne ces scores pour prendre une decision finale: sain, suspect ou danger.
+
+Les champs principaux envoyes au scoring sont:
+- score_auth
+- score_url
+- score_nlp
+- score_sandbox
+
+Le pipeline suit cette logique generale:
+- agent_auth analyse l'identite et les headers email
+- agent_url analyse les liens contenus dans le message
+- agent_nlp_bec analyse le contenu textuel et les signaux BEC
+- agent_sandbox analyse les pieces jointes
+- agent_scoring combine tous les scores et applique les hard rules
+
+Fichiers sources:
+- agents/agent_auth.py
+- agents/agent_url.py
+- agents/agent_nlp_bec.py
+- agents/agent_sandbox.py
+- agents/agent_scoring.py
+
+2. Agent Auth - score_auth
+
+Role:
+L'agent Auth evalue la fiabilite de l'expediteur a partir des headers email et des anomalies d'identite.
+
+Entrees principales:
+- From
+- Reply-To
+- Return-Path
+- Authentication-Results ou ARC Authentication-Results
+
+Ce que l'agent cherche:
+- SPF, DKIM et DMARC
+- alignement entre domaine From et domaine SPF/DKIM
+- mismatch Reply-To / From
+- mismatch Return-Path / From
+- titres executifs suspects
+- domaine homographe ou punycode
+- domaine cousin de marques connues
+- TLD suspects
+- usurpation de dirigeant
+
+Calcul du score:
+A. Hard rules immediates
+Certaines anomalies stoppent le calcul normal et retournent directement un score fixe:
+- homograph attack -> score 0
+- usurpation executive via domaine gratuit -> score 5
+- usurpation executive locale -> score 8
+- cousin domain -> score 10
+- TLD suspect / domaine suspect -> score 15
+- Reply-To different de From -> score 25
+- Reply-To suspect dans le meme domaine -> score 45
+
+B. Score SPF / DKIM / DMARC
+Si aucune hard rule ne se declenche, le score est calcule par accumulation:
+- SPF pass -> +30
+- SPF softfail ou neutral -> +10
+- SPF fail ou permerror -> -20
+- DKIM pass -> +35
+- DKIM fail ou permerror -> -15
+- DKIM pass mais domaine non aligne -> -35 supplementaires
+- DMARC pass avec p=reject -> +35
+- DMARC pass avec p=quarantine -> +25
+- DMARC pass sans politique forte -> +15
+- DMARC fail -> -20
+- DMARC bestguesspass -> -15
+
+C. Penalties supplementaires
+- Return-Path mismatch -> -40
+- SPF domain non aligne -> -30
+- domaine gratuit -> -10
+
+D. Signaux HVT et relay compromis
+L'agent detecte aussi les High-Value Targets (HVT) et les relays compromis possibles.
+- Si un titre executif est detecte sur un domaine corporate et que des signaux infra existent, une penalite de -50 est appliquee.
+- Si le profil ressemble a un HVT mais que les headers sont propres, le score n'est pas fortement penalise, mais:
+  - confidence_ceiling est limite a 75
+  - needs_nlp_review est mis a True
+  - le verdict devient "IDENTITE VERIFIEE - REVUE BEC RECOMMANDEE"
+
+Un cas plus strict existe aussi:
+- compromised_relay_suspected -> score plafonne a 50, confidence_ceiling limite a 60, et review NLP demandee
+
+Verdicts:
+- score >= 80 -> IDENTITE VERIFIEE
+- 55 <= score < 80 -> IDENTITE PARTIELLE
+- 30 <= score < 55 -> IDENTITE FAIBLE
+- score < 30 -> IDENTITE NON VERIFIEE
+
+Sorties importantes envoyees au scoring:
+- score_auth
+- confidence_ceiling
+- needs_nlp_review
+- verdict
+- detail
+
+3. Agent NLP/BEC - score_nlp
+
+Role:
+L'agent NLP/BEC analyse le contenu textuel du message pour detecter le phishing, le spam et les campagnes BEC.
+
+Entrees principales:
+- subject
+- body_text
+- sender_domain
+- indicateur institutional
+- indicateur url_malicious
+
+Sous-moteurs utilises:
+- RoBERTa spam classifier
+- DistilBERT phishing classifier
+- moteur BEC fuzzy base sur rapidfuzz
+
+A. Score RoBERTa
+Le modele RoBERTa produit un score de risque derive de sa prediction:
+- si le label est phishing/spam -> score = probabilite * 100
+- si le label est sain -> score = 100 - probabilite * 100
+- si le texte est reconnu comme legitime, le risque est reduit de 25 pour cent
+- si le texte est trop court, le score est neutralise ou plafonne
+
+B. Score DistilBERT
+Le modele DistilBERT est calibre au demarrage avec deux textes de test:
+- un message tres malveillant
+- un message benin
+
+Ensuite:
+- si le label correspond a la classe phishing -> risque = probabilite * 100
+- sinon -> risque = 100 - probabilite * 100
+- si le texte est trop court, le score est plafonne a 30
+
+C. Score BEC fuzzy
+L'agent cherche des patterns de type:
+- wire transfer
+- urgent payment
+- update your payment
+- verify your account
+- reply only to me
+- keep this confidential
+- je suis le DG
+- virement urgent
+- mot de passe expire
+
+Les motifs sont classes en 3 familles:
+- BEC_HIGH -> +50 points par match
+- BEC_IMPERSONATION -> +30 points par match
+- BEC_LOW -> +8 points par match
+
+Le score BEC est calcule ainsi:
+score_bec = min(100, nb_high * 50 + nb_impersonate * 30 + nb_low * 8)
+
+Si un contexte legitime est detecte et qu'aucun motif critique n'existe, le score peut rester bas.
+
+D. Fusion finale
+Le score final score_nlp combine les trois composantes avec des poids variables:
+- contexte trusted + legit_override -> RoBERTa 0.20, DistilBERT 0.50, BEC 0.30
+- contexte trusted seul -> 0.25 / 0.48 / 0.27
+- legit_override seul -> 0.28 / 0.45 / 0.27
+- cas general -> 0.30 / 0.45 / 0.25
+
+Planchers et plafonds importants:
+- nb_high >= 2 -> score >= 70
+- nb_high = 1 + URL malveillante -> score >= 65
+- nb_high = 1 + contexte non legitime -> score >= 55
+- URL malveillante + nb_high >= 2 -> score >= 75
+- contexte legitime + score_bec = 0 + pas d'URL -> score <= 40
+- domaine suspect -> score >= 55
+- forward depuis domaine suspect -> score >= 65
+- url_malicious -> floor absolu 75
+
+Verdicts:
+- score_nlp >= 75 -> CONTENU MALVEILLANT
+- 45 <= score_nlp < 75 -> CONTENU SUSPECT
+- score_nlp < 45 -> CONTENU SAIN
+
+Sorties importantes:
+- score_roberta
+- score_distilbert
+- score_bec
+- score_nlp
+- legit_signals
+- domain_suspicious
+- forwarded_domain_suspicious
+
+4. Agent URL - score_url
+
+Role:
+L'agent URL extrait toutes les URLs du message et evalue leur niveau de danger.
+
+Pipeline de traitement:
+1. Shorteners dangereux connus
+- bit.ly
+- tinyurl.com
+- ow.ly
+- is.gd
+- buff.ly
+- t.co
+- autres raccourcisseurs connus
+Ces liens sont penalises meme s'ils sont dans Tranco.
+
+2. Tunnels et reverse proxies suspects
+- ngrok.io
+- ngrok-free.app
+- localtunnel.me
+- loca.lt
+- localhost.run
+- serveo.net
+- interactsh.com
+- canarytokens.com
+
+3. Cache et Tranco
+- cache Redis si disponible
+- cache memo local
+- liste Tranco Top 1M pour reduire les faux positifs
+
+4. Heuristique locale
+L'agent detecte des imitations critiques de marques:
+- PayPal
+- Amazon
+- Microsoft / Office 365
+- Apple / iCloud
+- Google
+- banques
+
+Exemples de scores:
+- imitation critique PayPal/Amazon/Microsoft/Apple -> 85 a 90
+- IP directe dans l'URL -> 75
+- TLD gratuit suspect -> 60
+- domaine phishing generique -> 70
+- path malware pattern -> 75
+- hash suspect dans le path -> 50
+
+5. Sources externes
+- URLhaus
+- PhishTank
+Ces services peuvent renvoyer des scores eleves si l'URL est deja reputee malveillante.
+
+Score final:
+- score_url = score max parmi toutes les URLs analysees
+
+Verdicts:
+- score_url >= 85 -> LIEN MALVEILLANT DETECTE
+- 60 <= score_url < 85 -> LIEN SUSPECT
+- score_url < 60 -> LIENS SAINS
+
+Sorties importantes:
+- urls_found
+- urls
+- score_url
+- tranco_hits
+- verdict
+
+5. Agent Sandbox - score_sandbox
+
+Role:
+L'agent Sandbox analyse les pieces jointes et tente de detecter des comportements malveillants par analyse statique puis dynamique.
+
+Pieces jointes supportees:
+- PDF
+- DOCX
+- DOCM / DOC
+- XLSX / XLSM
+- ZIP
+
+5.1 Pipeline pieces jointes : orchestrateur -> sandbox -> score
+
+Cette sous-partie decrit le chemin reel des pieces jointes, depuis la collecte dans l'orchestrateur jusqu'au score final retourne par le sandbox Azure.
+
+A. Extraction des pieces jointes dans l'orchestrateur
+- Le point d'entree est `orchestrator.py`.
+- Le message est lu en format complet, puis `extract_attachments()` parcourt recursivement les parties MIME.
+- Seuls certains formats sont retenus pour la sandbox: `.pdf`, `.docx`, `.xlsx`, `.zip`.
+- Chaque piece jointe est transformee en dictionnaire contenant au minimum:
+  - `name`: nom du fichier
+  - `data`: contenu binaire
+  - `size`: taille du fichier en octets
+
+B. Construction du contexte de risque
+- L'orchestrateur conserve aussi les signaux du mail: `sender`, `subject`, `body_text`, `reply_to`, `return_path`, `authentication_results`.
+- Un score provisoire est calcule pour donner du contexte au sandbox.
+- Dans le flux runtime, ce contexte permet de savoir si l'analyse sandbox doit etre declenchee.
+
+C. Declenchement du sandbox
+- L'orchestrateur appelle `run_sandbox_agent(attachments=..., score_provisoire=...)`.
+- Si aucune piece jointe n'est presente, le sandbox retourne directement:
+  - `triggered = False`
+  - `score_sandbox = 0`
+  - verdict `PAS DE SANDBOX`
+- Si des pieces jointes existent, le sandbox est active et analyse chaque fichier separatement.
+
+D. Analyse locale dans le sandbox
+- Chaque fichier est verifie selon sa taille et son extension.
+- Si le fichier est trop lourd, le risque monte et le fichier peut etre ignore pour la suite, tout en gardant une penalite.
+- Si l'extension n'est pas supportee, une penalite est appliquee.
+- Ensuite, l'analyse statique specifique au type de fichier calcule un risque local:
+  - PDF: JavaScript, OpenAction, Launch, EmbeddedFile, URLs suspectes
+  - DOCX: macros VBA, liens externes, BEC, PowerShell/CMD
+  - DOCM/DOC: marqueurs VBA et auto-execution
+  - XLSX/XLSM: VBA, DDE, PowerShell, appels reseau
+  - ZIP: archive volumineuse, ratio suspect, executables, imbrication
+
+E. Passage dans l'environnement Azure
+- Chaque piece jointe valide est uploadée dans Azure Blob Storage avec un nom securise.
+- Le sandbox cree ensuite une Azure Container Instance (ACI) Linux avec une image Python 3.11-slim.
+- Un script Python est execute dans la container pour rejouer l'analyse dans un environnement isole.
+- Les resultats sont recuperes depuis les logs ACI.
+- Si les logs sont vides ou si la VM echoue, le cas est marque comme partiel et une penalite est conservee.
+
+F. Calcul du score_sandbox
+- Le score final du sandbox est derive du risque le plus eleve observe.
+- Formule pratique: `score_sandbox = min(100, max_risk)`
+- `max_risk` peut venir:
+  - du risque local du fichier
+  - du risque dynamique lu dans la VM Azure
+  - d'une penalite appliquee en cas d'echec d'upload ou d'echec VM
+
+G. Lecture du score
+- `score_sandbox >= 75` -> menace detectee
+- `40 <= score_sandbox < 75` -> comportement suspect
+- `score_sandbox < 40` -> plutot sain, si la VM a reussi
+- si la VM a echoue, le verdict reste partiel meme avec un score modere
+
+H. Impact sur l'agent scoring
+- Le champ `score_sandbox` est transmis tel quel a `agent_scoring`.
+- Un score eleve peut forcer la classe Danger.
+- Un score modere peut pousser vers la quarantaine.
+
+En resume, la chaine est:
+- extraction des pieces jointes dans l'orchestrateur
+- filtrage par taille et extension
+- analyse statique locale
+- upload dans Azure Blob Storage
+- execution dans Azure Container Instance
+- lecture des logs VM
+- calcul de `score_sandbox`
+- fusion finale dans `agent_scoring`
+
+A. Analyse statique
+PDF:
+- /JS ou /JavaScript -> +50
+- /AA ou /OpenAction -> +40
+- /Launch -> +65
+- /EmbeddedFile -> +35
+- formulaires avec actions -> +25
+- URLs suspectes -> +30
+
+DOCX:
+- macros VBA -> +70
+- liens externes suspects -> +45
+- liens externes connus -> +20
+- contenu BEC critique -> +25 par occurrence
+- contenu BEC faible -> +12 par occurrence
+- combinaison BEC faible + lien externe -> +15 bonus
+- PowerShell ou CMD dans XML -> +70
+
+DOCM / DOC:
+- format OLE2 -> +45 de base
+- VBA Project -> +40
+- AutoOpen / AutoExec / Document_Open -> +25 a +30
+- Shell / WScript / PowerShell -> +20 a +25
+
+XLSX / XLSM:
+- VBA Project -> +70
+- DDE / PowerShell -> +65
+- appels reseau via formule -> +45
+
+ZIP:
+- archive tres volumineuse decompressible -> score 100
+- ratio de compression suspect -> +80
+- executables dans l'archive -> +85
+- archive imbriquee lourde -> +40
+
+B. Analyse dynamique VM
+Apres l'analyse locale, le fichier est uploadé dans Azure Blob Storage puis execute dans une Azure Container Instance isolee.
+La VM refait une analyse et produit un journal avec:
+- vm_risk
+- vm_threats
+- sha256
+
+Si la VM echoue:
+- vm_failures augmente
+- le cas est signale comme resultat partiel
+- une penalite peut etre appliquee
+
+C. Score final
+- score_sandbox = min(100, risque_local ou risque_vm)
+
+Verdicts:
+- score_sandbox >= 75 -> SANDBOX : MENACE DETECTEE
+- 40 <= score_sandbox < 75 -> SANDBOX : COMPORTEMENT SUSPECT
+- score_sandbox < 40 et VM OK -> SANDBOX : FICHIERS SAINS
+- VM echouee -> SANDBOX : RESULTAT PARTIEL
+- pas de pieces jointes -> PAS DE SANDBOX
+
+Sorties importantes:
+- score_sandbox
+- vm_failures
+- results
+- threats
+- verdict
+
+6. Agent Scoring - score_final
+
+Role:
+L'agent Scoring est le decideur final. Il recoit:
+- score_auth
+- score_url
+- score_nlp
+- score_sandbox
+
+Il fait deux choses:
+1. applique des hard rules deterministes
+2. utilise un modele ML d'ensemble pour calculer la decision finale
+
+A. Hard rules
+Les hard rules prennent la priorite absolue.
+Exemples:
+- score_url >= 80 -> Danger
+- score_nlp >= 85 -> Danger, sauf si expediteur legitime et authentifie
+- score_sandbox >= 75 -> Danger
+- score_auth <= 5 et autres scores nuls -> Suspect
+- url >= 50 et auth <= 30 -> Danger
+- nlp >= 65 et auth <= 25 -> Danger
+- sandbox >= 40 et auth <= 35 -> Danger
+- auth <= 15 et url >= 8 -> Danger
+- auth <= 25 et nlp >= 20 -> Suspect
+- auth <= 10 et nlp >= 45 -> Suspect
+- forward BEC + auth faible -> Danger
+- nlp >= 55 et url >= 40 -> Danger
+- sandbox >= 40 -> Suspect
+
+B. Modele ML
+Si aucune hard rule ne s'applique, l'agent utilise un ensemble:
+- Random Forest
+- XGBoost
+- Vote soft avec poids 2 pour RF et 3 pour XGBoost
+
+Les features utilisees sont:
+- score_auth
+- score_url
+- score_nlp
+- score_sandbox
+
+Le score final est derive des probabilites de l'ensemble:
+- score_final = min(100, proba_danger * 100 + proba_suspect * 50)
+
+C. Overrides anti faux positifs
+Si l'expediteur est un expéditeur legitime connu, que score_auth >= 50, et que score_url <= 20 et score_sandbox <= 20:
+- score_nlp >= 85 -> quarantaine preventive
+- sinon -> livraison normale
+
+D. Cohérence score / prediction
+Le score final est ensuite aligne sur la classe finale:
+- classe 2 -> score_final >= 75
+- classe 1 -> score_final dans [45, 69]
+- classe 0 -> score_final <= 35
+
+Verdicts finaux:
+- classe 2 -> DANGER - BLOQUE
+- classe 1 -> SUSPECT - QUARANTAINE
+- classe 0 -> SAIN - DELIVRE
+
+Sorties importantes:
+- score_final
+- prediction
+- hard_rule
+- probabilites
+- feature_importances
+- verdict
+- action
+
+7. Lecture du flux complet
+
+En pratique, le flux est le suivant:
+1. agent_auth calcule score_auth et detecte si l'identite est douteuse.
+2. agent_url calcule score_url a partir des liens du message.
+3. agent_nlp_bec calcule score_nlp a partir du sujet et du corps.
+4. agent_sandbox calcule score_sandbox a partir des pieces jointes.
+5. agent_scoring fusionne les quatre scores et produit la decision finale.
+
+Le point important est que les scores ne sont pas independants:
+- un score_auth faible augmente fortement le poids des autres signaux
+- un score_nlp eleve peut suffire a bloquer le message si l'expediteur n'est pas fiable
+- une URL tres malveillante peut forcer un blocage meme si les autres signaux sont faibles
+- une piece jointe suspecte peut faire basculer vers la quarantaine ou le blocage
+
+8. Signaux les plus importants a surveiller
+
+Dans ce projet, les signaux les plus deterministes sont:
+- homograph attack
+- usurpation executive
+- reply-to mismatch
+- URL critique ou imitation de marque
+- BEC critique dans le texte
+- macros VBA ou executables dans les pieces jointes
+- sandbox >= 75
+
+Les signaux les plus utiles pour la revue manuelle sont:
+- confidence_ceiling < 100
+- needs_nlp_review = True
+- score_auth dans la zone 55 a 79
+- score_nlp entre 45 et 74
+- score_sandbox entre 40 et 74
+
+9. Conclusion
+
+Le pipeline est construit pour separer les responsabilites:
+- Auth = identite
+- URL = liens
+- NLP = contenu
+- Sandbox = pieces jointes
+- Scoring = decision finale
+
+Cette separation permet de mieux limiter les faux positifs tout en conservant une bonne couverture contre le phishing, le BEC et les pieces jointes malveillantes.

@@ -1,0 +1,446 @@
+\documentclass[11pt,a4paper]{article}
+
+\usepackage[a4paper,margin=2.5cm]{geometry}
+\usepackage{fontspec}
+\usepackage[french]{babel}
+\usepackage{graphicx}
+\usepackage{booktabs}
+\usepackage{longtable}
+\usepackage{tabularx}
+\usepackage{array}
+\usepackage{enumitem}
+\usepackage{setspace}
+\usepackage{fancyhdr}
+\usepackage{hyperref}
+\usepackage{caption}
+\usepackage{subcaption}
+\usepackage{xcolor}
+
+\IfFontExistsTF{Calibri}{\setmainfont{Calibri}}{\setmainfont{Liberation Sans}}
+
+\hypersetup{
+  colorlinks=true,
+  linkcolor=blue!60!black,
+  urlcolor=blue!60!black,
+  pdftitle={Rapport de présentation de soutenance ThreatIntel},
+  pdfauthor={GitHub Copilot}
+}
+
+\graphicspath{{./}{./diag/}{./test_results/}{./test_results_fixed/}}
+
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{0.65em}
+\renewcommand{\arraystretch}{1.25}
+\setlist[itemize]{leftmargin=1.2cm}
+
+\pagestyle{fancy}
+\fancyhf{}
+\fancyfoot[C]{\thepage}
+\renewcommand{\headrulewidth}{0pt}
+
+\newcommand{\SectionPage}[1]{%
+  \clearpage
+  \section*{#1}
+  \addcontentsline{toc}{section}{#1}
+}
+
+\newcommand{\SubSectionPage}[1]{%
+  \clearpage
+  \subsection*{#1}
+  \addcontentsline{toc}{subsection}{#1}
+}
+
+\newcommand{\File}[1]{\path{#1}}
+
+\begin{document}
+
+\begin{titlepage}
+  \centering
+  \vspace*{1.8cm}
+  {\Large École Nationale d'Ingénieurs de Tunis \par}
+  \vspace{0.4cm}
+  {\large PFA 2 \par}
+  \vspace{1.2cm}
+  {\huge\bfseries Rapport de présentation de soutenance \par}
+  \vspace{0.4cm}
+  {\LARGE ThreatIntel \par}
+  \vspace{1.2cm}
+  {\large Détection multi-agent des menaces email, phishing et BEC \par}
+  \vfill
+  {\large Document fondé sur le code source du projet, les rapports d'évaluation, l'architecture et les tests archivés dans le dépôt.\par}
+  \vspace{1cm}
+  {\large Version de travail générée le 3 mai 2026\par}
+\end{titlepage}
+
+\tableofcontents
+\clearpage
+
+\SectionPage{Introduction \& Contexte général}
+
+ThreatIntel est une solution de détection et de qualification du risque email qui combine analyse d'authentification, réputation d'URL, détection sémantique, analyse de pièces jointes et décision finale par fusion de scores. Le projet s'articule autour de \File{orchestrator.py}, des agents \File{agents/agent_auth.py}, \File{agents/agent_url.py}, \File{agents/agent_nlp_bec.py}, \File{agents/agent_sandbox.py}, \File{agents/agent_scoring.py}, ainsi que des couches de cache et de persistance \File{cache.py} et \File{cosmos_client.py}.
+
+Le pipeline a pour objectif de réduire la dépendance à un seul signal de sécurité. Un email peut être légitime au niveau SPF/DKIM/DMARC mais malveillant dans son contenu, ou inversement. Le système ThreatIntel répond à cette ambiguïté par une orchestration multi-agent, des garde-fous métier et des caches Redis/Cosmos DB afin de limiter la latence et d'éviter les analyses redondantes.
+
+Les évaluations archivées confirment ce besoin. L'agent Auth atteint 100\% sur le lot robuste de 16 cas, l'agent NLP+BEC atteint 100\% sur 20 cas ciblés, tandis que l'évaluation ultra-réelle NLP montre 87,9\% d'accuracy sur 404 cas avec 37 faux négatifs. L'agent URL v2.4, avant ses correctifs les plus récents, ne passait que 81,5\% des tests. Ces chiffres montrent qu'aucun composant isolé ne suffit à lui seul.
+
+\begin{itemize}
+  \item Entrée : e-mails Gmail / flux d'analyse, pièces jointes et métadonnées d'en-têtes.
+  \item Traitement : orchestration asynchrone et décision finale via \File{orchestrator.py} et \File{agents/agent_scoring.py}.
+  \item Sortie : verdict \textit{SAIN}, \textit{SUSPECT} ou \textit{DANGER}, rapport JSON/HTML, persistance Cosmos DB et cache Redis.
+  \item Observabilité : logs structurés, captures Azure, artefacts de test et rapports archivés.
+\end{itemize}
+
+\SectionPage{1. Analyse des risques}
+
+Le projet traite des risques qui ne relèvent pas d'un seul vecteur d'attaque. Les attaques les plus probables observées dans les jeux de tests sont : l'usurpation d'identité, les domaines cousins, les homographes, les redirections via shorteners, les tunnels de développement exposés, les demandes de virement, les pièces jointes piégées et les campagnes de phishing à texte court.
+
+\begin{longtable}{>{\raggedright\arraybackslash}p{0.21\linewidth} >{\raggedright\arraybackslash}p{0.17\linewidth} >{\raggedright\arraybackslash}p{0.56\linewidth}}
+\toprule
+Risque & Sévérité & Impact dans ThreatIntel \\
+\midrule
+Usurpation de dirigeant & Critique & Bypass possible si seul le header est analysé ; corrigé par \File{agents/agent_auth.py} et les signaux \texttt{needs\_nlp\_review} / \texttt{confidence\_ceiling}. \\
+Phishing par URL courte & Haute & Les shorteners \texttt{bit.ly}, \texttt{tinyurl.com}, \texttt{t.co} exigent un override du mode de confiance ; traité par \File{agents/agent_url.py}. \\
+Forwarding trompeur & Haute & La partie utile du message est parfois dans le corps transféré ; traité par \texttt{extract\_forwarded\_body()} et \texttt{extract\_forwarded\_sender\_domain()}. \\
+Pièce jointe malveillante & Critique & La sandbox doit isoler l'exécution et empêcher toute persistance ; traité par \File{agents/agent_sandbox.py}. \\
+Faux positifs sur newsletters & Haute & Un domaine légitime peut produire un score NLP élevé ; corrigé par les overrides anti-FP dans \File{agents/agent_scoring.py}. \\
+Latence et indisponibilité & Haute & Les API externes et la sandbox peuvent ralentir l'analyse ; compensé par Redis, timeouts et fallbacks. \\
+\bottomrule
+\end{longtable}
+
+Les rapports d'évaluation montrent également que les limites changent avec le jeu de test. Sur l'agent Auth, le lot de stress à 29 cas donne une précision de 94,7\% et une recall de 100\%, avec un faux positif sur un relay propre. Le lot blindspot à 12 cas montre une recall de 90\% et un faux négatif sur \texttt{B-REL-002}. L'analyse ultra-réaliste NLP sur 404 cas garde 87,9\% d'accuracy mais laisse 37 faux négatifs, ce qui justifie l'ajout de garde-fous au niveau orchestration.
+
+\SectionPage{2. État de l'art \& Étude comparative}
+
+La littérature et l'état de l'art opérationnel du projet peuvent être résumés en quatre familles : les contrôles d'authentification, la réputation d'URL, l'analyse sémantique et la sandbox. Les systèmes monolithiques échouent souvent sur les emails hybrides, par exemple un message parfaitement authentifié mais dont le corps contient une demande de virement, ou un message très court dont l'URL masque l'intention réelle.
+
+\begin{table}[h]
+\centering
+\caption{Comparaison synthétique des approches observées dans le projet}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.24\linewidth} >{\raggedright\arraybackslash}p{0.28\linewidth} >{\raggedright\arraybackslash}X}
+\toprule
+Approche & Forces & Limites observées \\
+\midrule
+SPF/DKIM/DMARC seuls & Très rapide, utile pour la réputation de domaine. & Ne détecte pas le BEC sur compte légitime compromis ni les emails transférés. \\
+URL heuristique seule & Très efficace sur shorteners, TLD suspects et imitations de marque. & Les domaines légitimes dans Tranco peuvent masquer un usage malveillant si aucun override n'existe. \\
+NLP/BEC seul & Très bon sur les demandes de virement, l'urgence et l'ingénierie sociale. & Sensible aux longs textes, aux faux positifs newsletter et aux textes ultra-courts. \\
+Sandbox seule & Excellente pour les pièces jointes actives. & Coûteuse en latence et inutile sans pièce jointe. \\
+ThreatIntel multi-agent & Combine les signaux et réduit les trous de couverture. & Requiert des garde-fous, du cache et des seuils cohérents. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Les rapports archivés donnent un repère concret pour cette comparaison. \File{ANALYSE_AGENT_URL_v2.4.md} indique un état global « bon mais incomplet » avec 81,5\% de tests passés, une moyenne de 195,8 ms, un maximum de 493,4 ms et des angles morts identifiés sur les shorteners, les tunnels et certaines imitations PayPal/Amazon. À l'inverse, \File{RAPPORT_AGENT_NLP_BEC_v3.2.md} annonce 100\% sur son lot ciblé, ce qui montre que la qualité dépend fortement de la couverture des cas de test.
+
+\begin{table}[h]
+\centering
+\caption{Comparatif des résultats archivés}
+\begin{tabular}{lrrrr}
+\toprule
+Composant & Cas & Accuracy & Precision & Recall \\
+\midrule
+Auth robuste & 16 & 1,000 & 1,000 & 1,000 \\
+Auth stress & 29 & 0,966 & 0,947 & 1,000 \\
+Auth blindspots & 12 & 0,917 & 1,000 & 0,900 \\
+NLP+BEC robuste & 20 & 1,000 & 1,000 & 1,000 \\
+NLP ultra-réel & 404 & 0,879 & 0,932 & 0,817 \\
+URL v2.4 archivé & 6 + 10 + 4 & - & - & 81,5\% de tests passés \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\SectionPage{3. Les Défis de la Sécurité Email}
+
+La sécurité email est difficile parce que les attaquants composent plusieurs signaux faibles : un sujet banal, un corps transféré, un domaine visuellement proche d'une marque, et parfois une pièce jointe. Le projet répond à cette réalité par une séparation stricte des responsabilités : Auth pour les en-têtes, URL pour les liens, NLP+BEC pour le contenu, Sandbox pour les fichiers, Scoring pour la décision.
+
+Le code actuel montre plusieurs défis concrets.
+
+\begin{itemize}
+  \item Les emails transférés : \File{agents/agent_nlp_bec.py} extrait la vraie partie utile avec \texttt{extract\_forwarded\_body()} puis \texttt{extract\_forwarded\_sender\_domain()}.
+  \item Les titres exécutifs obfusqués : \File{agents/agent_auth.py} gère les variantes latines, arabes, les domaines gratuits et les homographes.
+  \item Les URLs trompeuses : \File{agents/agent_url.py} doit trier les URL risquées avant la limite \texttt{max\_urls=5}, sinon une URL malveillante peut être écartée.
+  \item Les pièces jointes : \File{agents/agent_sandbox.py} applique des règles statiques, par exemple sur PDF et DOCX, avant l'analyse plus lourde.
+  \item La latence : \File{cache.py} impose des TTL distincts et \File{orchestrator.py} calcule un score provisoire pour décider si la sandbox doit être déclenchée.
+\end{itemize}
+
+La contrainte latence est particulièrement importante. Les scénarios de chapitre 4 montrent des valeurs observées allant de 15 ms en cache hit à 5,2 s lorsqu'une pièce jointe déclenche l'analyse sandbox complète. Le système doit donc maintenir un compromis entre couverture de détection et temps de réponse.
+
+\SectionPage{4. Problématique : Les Limites de l'Existant}
+
+L'existant n'est pas un seul produit mais un empilement de contrôles. Cette pile reste vulnérable lorsqu'un unique vecteur est incorrectement priorisé. L'agent Auth de première génération, par exemple, pouvait classer des cas compromis comme bénins lorsqu'un relay légitime était propre. L'agent URL v2.4 laissait passer des shorteners et des tunnels parce qu'ils sont aussi présents dans des listes de confiance. L'agent NLP, enfin, avait une couverture incomplète sur les textes très longs ou très hétérogènes.
+
+\begin{table}[h]
+\centering
+\caption{Limites observées avant consolidation multi-agent}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.22\linewidth} >{\raggedright\arraybackslash}p{0.20\linewidth} >{\raggedright\arraybackslash}X}
+\toprule
+Composant & Limite mesurée & Conséquence \\
+\midrule
+Auth blindspots & F1 de 0,571 sur un lot initial puis 0,917 / 0,889 selon les campagnes & Certains relays compromis restaient non bloqués. \\
+NLP ultra-réel & 37 faux négatifs sur 404 cas & Le contenu phishing pouvait survivre à une seule passe NLP. \\
+URL v2.4 & 81,5\% de succès, 5 faux négatifs annoncés, moyenne 195,8 ms & Les shorteners et tunnels pouvaient être classés trop tard. \\
+Sandbox légère & Signatures plutôt que full emulation & Impossible de déduire un comportement complexe sans pièce jointe active. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+Le meilleur exemple de ce problème est le blindspot sur relay compromis authentifié. Le lot \File{reports/auth_blindspots_report_20260418_173020.md} montre encore un faux négatif, et le lot \File{reports/auth_stress_report_20260418_163438.md} a d'abord révélé 8 faux négatifs avant les correctifs successifs. En parallèle, \File{ANALYSE_AGENT_URL_v2.4.md} documente explicitement les shorteners et ngrok comme faux négatifs.
+
+\SectionPage{5. Solution proposée}
+
+La solution ThreatIntel est une chaîne de décision multi-agent. L'orchestrateur central \File{orchestrator.py} lance l'analyse, vérifie le cache, appelle les agents en parallèle, calcule un score provisoire, déclenche la sandbox si nécessaire, puis exécute le scoring final. Le flux est ensuite persisté dans Cosmos DB par \File{cosmos_client.py} et mémorisé côté Redis par \File{cache.py}.
+
+Les mécanismes clés sont les suivants.
+
+\begin{itemize}
+  \item Découplage : ingestion et analyse sont séparées par une queue ou un cache, ce qui évite de bloquer le flux de messagerie.
+  \item Fusion de signaux : Auth, URL, NLP et Sandbox n'ont pas le même poids ; aucun signal seul n'impose la vérité globale.
+  \item Garde-fous : \texttt{apply\_inbox\_guardrail()} force une quarantaine pour un INBOX avec authentification faible et NLP suspect.
+  \item Mémoire : Redis mémorise les verdicts de \texttt{message\_id}, le corps NLP, le domaine auth et les URL.
+  \item Traçabilité : chaque analyse peut être réinsérée via \texttt{save\_analysis()} avec un document Cosmos structuré.
+\end{itemize}
+
+Le seuil de décision final du scoring est cohérent avec les fichiers de code et de test. Dans \File{agents/agent_scoring.py}, la classe 2 correspond à \textit{DANGER}, la classe 1 à \textit{SUSPECT} et la classe 0 à \textit{SAIN}. La règle métier convertit les probabilités de l'ensemble RF+XGBoost en une note finale, puis corrige cette décision si une hard rule s'active.
+
+\SectionPage{6. Architecture de la solution proposée}
+
+L'architecture du système est celle d'un pipeline cloud-native avec orchestration parallèle. Les figures archivées dans le dépôt illustrent les points d'entrée et les séquences principales.
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.94\linewidth]{\detokenize{diag/Capture d'écran 2026-04-28 183233.png}}
+  \caption{Diagramme de cas d'utilisation du système ThreatIntel.}
+\end{figure}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.94\linewidth]{\detokenize{diag/Capture d'écran 2026-04-28 183300.png}}
+  \caption{Diagramme de séquence de l'analyse d'un e-mail suspect.}
+\end{figure}
+
+Le schéma logique se lit ainsi : l'e-mail est reçu, transformé en payload, mis en file, récupéré par \File{orchestrator.py}, puis traité par les agents en parallèle. Le cache Redis est consulté en premier, Cosmos DB sert de source de vérité pour les rapports persistés, et le SOC reçoit la décision finale.
+
+Les points de contrôle importants sont visibles dans le code :
+
+\begin{itemize}
+  \item \texttt{orchestrate(email\_context)} pilote l'ensemble.
+  \item \texttt{apply\_inbox\_guardrail()} évite une livraison dangereuse dans l'INBOX.
+  \item \texttt{run\_auth\_agent()}, \texttt{run\_url\_agent()}, \texttt{run\_nlp\_bec\_agent()}, \texttt{run\_sandbox\_agent()} et \texttt{run\_scoring\_agent()} représentent les blocs fonctionnels.
+  \item \texttt{get\_analysis\_by\_hash()} et \texttt{save\_analysis()} assurent l'historisation dans Cosmos DB.
+\end{itemize}
+
+\begin{table}[h]
+\centering
+\caption{Paramètres structurants de l'architecture}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.30\linewidth} >{\raggedright\arraybackslash}X}
+\toprule
+Élément & Valeur réelle du projet \\
+\midrule
+Cache email & TTL 24h dans \File{cache.py} \\
+Cache URL & TTL 1h \\
+Cache NLP & TTL 6h \\
+Cache Auth & TTL 12h \\
+Sandbox & Déclenchée si score provisoire élevé ou pièce jointe détectée \\
+Cosmos DB & Base par défaut \texttt{pfa\_email\_threats}, conteneur \texttt{analyses}, partition \texttt{/email\_hash} \\
+Orchestrateur & \File{orchestrator.py} avec exécution asynchrone et garde-fou INBOX \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\SectionPage{7. Détails de l'implémentation}
+
+\SubSectionPage{Agent Auth}
+
+L'agent Auth est implémenté dans \File{agents/agent_auth.py} v3.5. Il normalise les noms d'affichage, détecte les titres exécutifs en anglais, français et arabe, puis combine les signaux SPF/DKIM/DMARC, le Reply-To, le Return-Path, les TLD suspects, les tokens d'ingénierie sociale et les cas de relay compromis.
+
+Son point d'entrée principal est \texttt{run\_auth\_agent(sender, subject, to\_header, cc\_header, reply\_to, return\_path, auth\_results, arc\_results)}. Les fonctions internes importantes sont \texttt{parse\_authentication\_results()}, \texttt{parse\_from\_header()}, \texttt{check\_executive\_title\_spoofing()} et \texttt{check\_compromised\_relay\_suspected()}.
+
+\begin{verbatim}
+def check_executive_title_spoofing(display_name: str, domain: str) -> tuple:
+    if not display_name or not domain:
+        return False, ""
+    is_free = domain in FREE_EMAIL_DOMAINS
+    if not is_free:
+        return False, ""
+    for title_ar in EXECUTIVE_TITLES_AR:
+        if title_ar in display_name:
+            return True, "Titre exécutif arabe via domaine gratuit"
+\end{verbatim}
+
+Les tests réels sont solides sur les lots de référence : 16 cas robustes donnent 100\% d'accuracy, 29 cas de stress donnent 96,6\% d'accuracy, 94,7\% de précision et 100\% de recall, tandis que le lot blindspot à 12 cas donne 91,7\% d'accuracy et 90\% de recall. Le faux négatif observé correspond à un relay compromis légitime, ce qui explique la nécessité des signaux \texttt{needs\_nlp\_review} et \texttt{confidence\_ceiling}.
+
+\begin{table}[h]
+\centering
+\caption{Résultats Auth archivés}
+\begin{tabular}{lrrrr}
+\toprule
+Lot & Cas & Accuracy & Recall & F1 \\
+\midrule
+Robuste & 16 & 1,000 & 1,000 & 1,000 \\
+Stress & 29 & 0,966 & 1,000 & 0,973 \\
+Blindspots & 12 & 0,917 & 0,900 & 0,947 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.90\linewidth]{\detokenize{test_results_fixed/confusion_matrix_Heuristique_Améliorée.png}}
+  \caption{Matrice de confusion associée aux heuristiques améliorées de détection.}
+\end{figure}
+
+\SubSectionPage{Agent URL}
+
+L'agent URL est implémenté dans \File{agents/agent_url.py} v2.5. Sa logique de décision est centrale : \texttt{check\_url(url)} applique d'abord les overrides de shorteners et de tunnels, puis vérifie Tranco, ensuite le cache, puis les heuristiques, enfin les API externes URLhaus et PhishTank en parallèle.
+
+\begin{verbatim}
+def check_url(url: str) -> tuple[int, str, bool]:
+    root = get_root_domain(url)
+    if root in DANGEROUS_SHORTENERS:
+        return 60, "URL Shortener", False
+    if root in DANGEROUS_TUNNELS:
+        return 65, "Tunnel/reverse proxy", False
+    in_tranco, _ = is_in_tranco(url)
+    if in_tranco:
+        ...
+    p_score, p_detail = check_url_parallel(url)
+\end{verbatim}
+
+La fonction \texttt{run\_url\_agent(body\_text, max\_urls=5)} conserve l'ordre des URL détectées, trie d'abord les URL risquées, puis tronque à cinq URL pour éviter qu'un lien malveillant ne soit perdu dans un texte riche. Cette correction est explicitement documentée dans le code courant.
+
+Le rapport archivé \File{ANALYSE_AGENT_URL_v2.4.md} est la meilleure base chiffrée disponible. Il indique 81,5\% de tests passés, 7/7 pour Tranco Top 1M, 4/4 pour l'extraction d'URL, mais seulement 6/10 pour l'heuristique locale et 5/6 pour l'agent global. Les métriques de latence sont bonnes mais non exceptionnelles : moyenne 195,8 ms, minimum 0 ms et maximum 493,4 ms.
+
+\begin{table}[h]
+\centering
+\caption{Bilan URL archivé}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.25\linewidth} >{\centering\arraybackslash}p{0.15\linewidth} >{\raggedright\arraybackslash}X}
+\toprule
+Catégorie & Score & Lecture \\
+\midrule
+Tranco Top 1M & 7/7 & Les domaines connus sont correctement reconnus. \\
+Extract URLs & 4/4 & Le parser est robuste. \\
+Heuristique locale & 6/10 & Shorteners / TLDs et patterns restent fragiles dans v2.4. \\
+Agent global & 5/6 & La couverture est correcte mais incomplète. \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.90\linewidth]{\detokenize{test_results_fixed/model_comparison.png}}
+  \caption{Comparaison graphique des modèles et heuristiques dans les rapports de test.}
+\end{figure}
+
+\SubSectionPage{Agent NLP+BEC}
+
+L'agent NLP+BEC est implémenté dans \File{agents/agent_nlp_bec.py} v3.6. Il charge un RoBERTa spam classifier, un DistilBERT local ou fallback HF, puis applique un ensemble de règles BEC basées sur le fuzzy matching. Les fonctions clés sont \texttt{extract\_forwarded\_sender\_domain()}, \texttt{extract\_forwarded\_body()}, \texttt{detect\_legitimate\_context()}, \texttt{analyze\_roberta()}, \texttt{analyze\_distilbert()} et \texttt{analyze\_bec()}.
+
+\begin{verbatim}
+def analyze_bec(text: str, is_legit: bool, sender_domain: str = "", word_cap: int = 2000) -> tuple:
+    high = find_matches(BEC_PATTERNS_HIGH)
+    low = find_matches(BEC_PATTERNS_LOW)
+    impersonate = find_matches(BEC_IMPERSONATION_PATTERNS)
+    score = min(100, len(high) * 50 + len(impersonate) * 30 + len(low) * 8)
+\end{verbatim}
+
+Le lot robuste de l'agent NLP+BEC donne 100\% sur 20 cas. Le lot ultra-réel, en revanche, montre la vraie difficulté du problème : 404 cas, 87,9\% d'accuracy, 93,2\% de précision, 81,7\% de recall et 37 faux négatifs. Le lot de blindspots le plus récent donne 100\% sur 16 cas ciblés, ce qui montre que la logique a été durcie sur les cas connus.
+
+\begin{table}[h]
+\centering
+\caption{Résultats NLP+BEC archivés}
+\begin{tabular}{lrrrr}
+\toprule
+Lot & Cas & Accuracy & Precision & Recall \\
+\midrule
+Robuste & 20 & 1,000 & 1,000 & 1,000 \\
+Ultra-réel & 404 & 0,879 & 0,932 & 0,817 \\
+Blindspots récents & 16 & 1,000 & 1,000 & 1,000 \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+Le rapport \File{RAPPORT_AGENT_NLP_BEC_v3.2.md} confirme aussi une précision globale parfaite sur les tests ciblés, mais les données ultra-réelles montrent que la généralisation reste plus difficile. C'est précisément la raison pour laquelle ThreatIntel n'utilise pas le NLP comme unique source de vérité.
+
+\SubSectionPage{Agent Sandbox}
+
+L'agent Sandbox est implémenté dans \File{agents/agent_sandbox.py}. Il propose des analyseurs statiques par format, par exemple \texttt{analyze\_pdf()}, \texttt{analyze\_docx()}, \texttt{analyze\_docm()} et \texttt{analyze\_xlsx()}, puis une orchestration plus lourde via \texttt{run\_sandbox\_agent(attachments, score\_provisoire)} et \texttt{run\_azure\_container(blob\_url, blob\_name)}.
+
+\begin{verbatim}
+def analyze_docx(data: bytes) -> dict:
+    if 'word/vbaProject.bin' in files:
+        threats.append("Macros VBA détectées")
+        risk += 70
+    if unknown:
+        threats.append("Liens externes suspects")
+        risk += 45
+    if fl_found and ext_links_found:
+        threats.append("Signal combiné : BEC faible + lien externe")
+        risk += 15
+\end{verbatim}
+
+Les scénarios de chapitre 4 donnent des chiffres très concrets. Un flux complet avec sandbox actif atteint 5,2 s, le scénario de résilience descend à 1,8 s, et le cache hit à 15 ms. La charge modérée affiche p50 = 1,2 s, p95 = 3,8 s et p99 = 4,5 s, ce qui respecte la cible p99 ≤ 5 s. Ces valeurs montrent que la sandbox est le composant dominant de la latence.
+
+\begin{table}[h]
+\centering
+\caption{Performances sandbox et pipeline associées}
+\begin{tabular}{lrr}
+\toprule
+Scénario & Latence & Lecture \\
+\midrule
+Cache hit & 0,015 s & Verdict réutilisé instantanément. \\
+Flux complet avec sandbox & 2,3 s à 5,2 s & Dépend des fichiers et de la charge. \\
+Résilience & 1,8 s & Fallback actif sans timeout majeur. \\
+Charge modérée & p99 = 4,5 s & Objectif respecté. \\
+\bottomrule
+\end{tabular}
+\end{table}
+
+\begin{figure}[h]
+  \centering
+  \includegraphics[width=0.94\linewidth]{\detokenize{Capture d'écran 2026-04-29 123852.png}}
+  \caption{Capture Azure d'un container sandbox dans l'environnement ThreatIntel.}
+\end{figure}
+
+\SubSectionPage{Agent Scoring}
+
+L'agent Scoring, dans \File{agents/agent_scoring.py} v3.1, constitue la couche de décision finale. Il entraîne un ensemble \textit{RandomForest + XGBoost} avec \texttt{VotingClassifier(voting='soft', weights=[2,3])}, puis applique des hard rules enrichies par le sujet et l'expéditeur. La règle \texttt{apply\_hard\_rules()} est essentielle pour éviter qu'un score purement statistique écrase un contexte métier fort.
+
+\begin{verbatim}
+def apply_hard_rules(auth, url, nlp, sandbox, subject="", sender="") -> tuple:
+    if url >= 80:
+        return 2, "URL critique — vecteur unique détecté"
+    if nlp >= 85:
+        if _is_legit_newsletter(sender_l) and auth >= 50:
+            return 1, "NLP élevé mais expéditeur légitime authentifié"
+        return 2, "NLP critique — contenu malveillant confirmé"
+\end{verbatim}
+
+Le calcul final utilise les probabilités de l'ensemble : \texttt{score\_final = int(ens\_probas[2] * 100 + ens\_probas[1] * 50)}. Les seuils de verdict sont stables : classe 2 \(\rightarrow\) \textit{DANGER}, classe 1 \(\rightarrow\) \textit{SUSPECT}, classe 0 \(\rightarrow\) \textit{SAIN}. L'override anti-faux-positifs pour les expéditeurs de confiance authentifiés permet d'éviter de bloquer des newsletters ou des flux institutionnels.
+
+L'orchestrateur ajoute un second niveau de sécurité avec \texttt{apply\_inbox\_guardrail()}. Dans l'INBOX, si \texttt{score\_auth <= 10} et \texttt{score\_nlp >= 40} alors une action \textit{DELIVER} est transformée en \textit{QUARANTINE}. Cette règle correspond exactement au comportement attendu pour les attaques hybrides authentifiées mais malveillantes.
+
+\begin{table}[h]
+\centering
+\caption{Paramètres de décision du scoring}
+\begin{tabularx}{\linewidth}{>{\raggedright\arraybackslash}p{0.30\linewidth} >{\raggedright\arraybackslash}X}
+\toprule
+Règle & Valeur réelle \\
+\midrule
+NLP critique & \texttt{score\_nlp >= 85} \\
+URL critique & \texttt{score\_url >= 80} \\
+Sandbox critique & \texttt{score\_sandbox >= 75} \\
+Auth faible seule & \texttt{score\_auth <= 5} \\
+Quarantaine INBOX forcée & \texttt{score\_auth <= 10} et \texttt{score\_nlp >= 40} \\
+Cache email & message_id en Redis, TTL 24h \\
+\bottomrule
+\end{tabularx}
+\end{table}
+
+\SectionPage{Conclusion \& Perspectives}
+
+ThreatIntel montre qu'une défense email crédible ne peut pas dépendre d'un seul modèle. L'authentification, la réputation d'URL, le contenu sémantique et la sandbox détectent chacun une portion du risque, mais leurs zones mortes ne se recouvrent pas complètement. Le pipeline multi-agent, les hard rules, les caches Redis et la persistance Cosmos DB constituent donc la vraie valeur du projet.
+
+Le bilan expérimental est net. Les agents Auth et NLP ciblés atteignent 100\% sur leurs lots robustes, l'agent URL a été renforcé pour corriger ses angles morts, et le scoring final sécurise les cas hybrides. Les performances montrent aussi que la solution reste exploitable en pratique : 15 ms en cache hit, 1,8 s avec résilience, 2,3 s sur un flux standard et 5,2 s dans le cas le plus lourd avec sandbox.
+
+Les perspectives sont claires : consolider une évaluation end-to-end unique, compléter le monitoring Cosmos/Redis par des captures d'exploitation plus systématiques, durcir encore la détection homoglyphes et enrichir la sandbox pour les formats binaires et macros. La base actuelle est suffisamment structurée pour servir de socle de soutenance et de déploiement progressif.
+
+\end{document}

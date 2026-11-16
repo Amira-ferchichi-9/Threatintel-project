@@ -1,0 +1,40 @@
+--extra-index-url https://download.pytorch.org/whl/cpu
+
+# API
+fastapi==0.115.0
+uvicorn==0.30.6
+pydantic==2.9.0
+
+# Azure
+azure-cosmos==4.7.0
+azure-identity==1.17.1
+azure-mgmt-compute==33.0.0
+azure-mgmt-resource==23.1.1
+azure-storage-blob==12.22.0
+azure-mgmt-containerinstance
+
+# Cache
+redis==5.0.8
+
+# ML / NLP
+transformers==4.44.2
+torch==2.4.1+cpu
+scikit-learn==1.5.2
+xgboost==2.1.1
+numpy==1.26.4
+pandas
+imbalanced-learn
+
+# Email / Google
+google-auth==2.34.0
+google-auth-oauthlib==1.2.1
+google-api-python-client==2.143.0
+
+# Utilitaires
+requests==2.32.3
+dnspython==2.6.1
+python-dotenv==1.0.1
+rapidfuzz
+tranco
+matplotlib
+python-docxpython-dotenv

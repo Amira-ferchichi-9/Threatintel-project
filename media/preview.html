@@ -1,0 +1,797 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=DM+Serif+Display:ital@0;1&family=DM+Sans:wght@300;400;500&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="style.css">
+<title>ThreatIntel — Preview</title>
+</head>
+<body>
+
+<!-- ===== SIDEBAR ===== -->
+<div id="sidebar">
+  <div class="brand">
+    <span class="brand-name">ThreatIntel</span>
+    <span class="brand-sub">Email Security</span>
+  </div>
+
+  <div class="nav-section">Analysis</div>
+  <button class="nav-item active" data-nav="overview">
+    <span class="nav-dot"></span>Overview
+  </button>
+  <button class="nav-item" data-nav="analyze">
+    <span class="nav-dot"></span>Analyze Email
+  </button>
+
+  <div class="nav-section">Management</div>
+  <button class="nav-item" data-nav="blacklist">
+    <span class="nav-dot"></span>Blacklist
+  </button>
+
+  <div class="sidebar-bottom">
+    <button class="nav-item" id="btn-refresh-side">
+      <span class="nav-dot"></span>Refresh Data
+    </button>
+  </div>
+</div>
+
+<!-- ===== MAIN ===== -->
+<div id="main">
+
+  <div id="header">
+    <div class="breadcrumb">
+      <span class="bc-root">ThreatIntel</span>
+      <span class="bc-sep">/</span>
+      <span id="page-title">Dashboard</span>
+    </div>
+    <div class="header-right">
+      <div class="live-badge on" id="live-badge">
+        <div class="live-dot"></div>
+        <span id="live-label">LIVE</span>
+      </div>
+      <span class="last-upd" id="last-upd">Loading...</span>
+      <button class="btn btn-launch btn-sm" id="btn-launch">&#9654; Analyze Last 5</button>
+      <button class="btn btn-ghost btn-sm" id="btn-refresh">Refresh</button>
+    </div>
+  </div>
+
+  <div id="filter-bar">
+    <button class="ftab active" data-filter="ALL">All</button>
+    <button class="ftab f-danger" data-filter="DANGER">Danger</button>
+    <button class="ftab f-sus" data-filter="SUSPICIOUS">Suspicious</button>
+    <button class="ftab f-safe" data-filter="SAFE">Safe</button>
+  </div>
+
+  <div id="content">
+
+    <!-- ── OVERVIEW ── -->
+    <div class="tab-pane active" id="pane-overview">
+
+      <div class="kpi-row">
+        <div class="kpi-card">
+          <div class="kpi-label">Total Analyzed</div>
+          <div class="kpi-num" id="kpi-total">—</div>
+          <div class="kpi-sub">avg score: <span id="kpi-avg">—</span>/100</div>
+        </div>
+        <div class="kpi-card k-danger">
+          <div class="kpi-label">Danger</div>
+          <div class="kpi-num" id="kpi-danger">—</div>
+          <div class="kpi-sub" id="kpi-danger-pct">—</div>
+        </div>
+        <div class="kpi-card k-sus">
+          <div class="kpi-label">Suspicious</div>
+          <div class="kpi-num" id="kpi-sus">—</div>
+          <div class="kpi-sub" id="kpi-sus-pct">—</div>
+        </div>
+        <div class="kpi-card k-safe">
+          <div class="kpi-label">Safe</div>
+          <div class="kpi-num" id="kpi-safe">—</div>
+          <div class="kpi-sub" id="kpi-safe-pct">—</div>
+        </div>
+      </div>
+
+      <div class="mid-row">
+        <div class="panel-card">
+          <div class="panel-title">Threat Distribution</div>
+          <div class="donut-wrap">
+            <canvas id="donut" width="160" height="160"></canvas>
+          </div>
+          <div id="donut-legend"></div>
+        </div>
+
+        <div class="panel-card">
+          <div class="panel-title">Agent Score Breakdown</div>
+          <div id="agent-bars">
+            <div class="loading"><div class="spinner"></div>Loading...</div>
+          </div>
+        </div>
+      </div>
+
+      <div class="panel-card section-gap">
+        <div class="panel-title">Threat Timeline — Last 7 Days</div>
+        <div class="timeline-wrap" id="timeline-wrap">
+          <div class="loading"><div class="spinner"></div>Loading...</div>
+        </div>
+      </div>
+
+      <div class="table-panel">
+        <div class="table-header">
+          <div class="panel-title" style="margin-bottom:0">Recent Activity</div>
+          <span style="font-size:11px;color:var(--text-3)" id="table-count"></span>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Sender</th><th>Subject</th><th>Verdict</th>
+              <th>Score</th><th>Folder</th><th>Time</th>
+            </tr>
+          </thead>
+          <tbody id="email-tbody">
+            <tr><td class="empty" colspan="6">Loading...</td></tr>
+          </tbody>
+        </table>
+      </div>
+    </div>
+
+    <!-- ── ANALYZE ── -->
+    <div class="tab-pane" id="pane-analyze">
+      <div style="max-width:760px">
+        <div class="panel-title" style="margin-bottom:14px">Analyze Email</div>
+
+        <div class="panel-card section-gap">
+          <div class="panel-title" style="margin-bottom:14px">Analysis Pipeline</div>
+          <div class="pipeline" id="pipeline">
+            <div class="pipe-step" id="pipe-auth">
+              <div class="pipe-icon">&#10003;</div>
+              <div class="pipe-label">Auth</div>
+              <div class="pipe-score" id="pipe-auth-score"></div>
+            </div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step" id="pipe-url">
+              <div class="pipe-icon">&#128279;</div>
+              <div class="pipe-label">URL</div>
+              <div class="pipe-score" id="pipe-url-score"></div>
+            </div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step" id="pipe-nlp">
+              <div class="pipe-icon">&#128221;</div>
+              <div class="pipe-label">NLP</div>
+              <div class="pipe-score" id="pipe-nlp-score"></div>
+            </div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step" id="pipe-sandbox">
+              <div class="pipe-icon">&#128203;</div>
+              <div class="pipe-label">Sandbox</div>
+              <div class="pipe-score" id="pipe-sandbox-score"></div>
+            </div>
+            <div class="pipe-connector"></div>
+            <div class="pipe-step" id="pipe-scoring">
+              <div class="pipe-icon">&#9654;</div>
+              <div class="pipe-label">Scoring</div>
+              <div class="pipe-score" id="pipe-scoring-score"></div>
+            </div>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label style="font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:6px">
+            <input type="radio" name="itype" value="content" checked> Raw content
+          </label>
+          <label style="font-size:12px;color:var(--text-2);display:flex;align-items:center;gap:6px">
+            <input type="radio" name="itype" value="path"> File path (.eml / .txt)
+          </label>
+        </div>
+        <textarea class="inp" id="email-input"
+          placeholder="Paste raw email here (headers + body)..."></textarea>
+        <div class="form-row" style="margin-top:10px;margin-bottom:0">
+          <button class="btn btn-primary" id="btn-analyze">Analyze</button>
+          <button class="btn btn-ghost" id="btn-clear-analyze">Clear</button>
+        </div>
+        <div id="analyze-result"></div>
+      </div>
+    </div>
+
+    <!-- ── BLACKLIST ── -->
+    <div class="tab-pane" id="pane-blacklist">
+      <div style="max-width:800px">
+        <div class="panel-title" style="margin-bottom:14px">Blacklist Manager</div>
+        <div class="form-row">
+          <input class="inp inp-grow" id="bl-value"
+            placeholder="domain.com / 192.168.1.1 / user@example.com" maxlength="200">
+          <select class="inp" id="bl-cat">
+            <option value="domain">Domain</option>
+            <option value="ip">IP Address</option>
+            <option value="email">Email</option>
+          </select>
+          <input class="inp inp-grow" id="bl-reason" placeholder="Reason (optional)" maxlength="200">
+          <button class="btn btn-primary" id="btn-bl-add">Add Entry</button>
+        </div>
+        <div id="bl-tag-list" class="bl-tag-list"></div>
+        <div class="table-panel">
+          <table>
+            <thead>
+              <tr><th>Value</th><th>Category</th><th>Reason</th><th>Added</th><th></th></tr>
+            </thead>
+            <tbody id="bl-tbody">
+              <tr><td class="empty" colspan="5">Blacklist is empty</td></tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<!-- ===== EMAIL DETAIL DRAWER ===== -->
+<div class="drawer-overlay" id="drawer-overlay"></div>
+<div class="drawer" id="email-drawer">
+  <div class="drawer-head">
+    <div class="drawer-avatar" id="d-avatar">?</div>
+    <div class="drawer-info">
+      <div class="drawer-name"    id="d-name">—</div>
+      <div class="drawer-email"   id="d-email">—</div>
+      <div class="drawer-subject" id="d-subject">—</div>
+      <div class="drawer-time"    id="d-time">—</div>
+    </div>
+    <button class="drawer-close" id="btn-drawer-close">&#10005;</button>
+  </div>
+  <div class="drawer-tabs">
+    <button class="dtab active" data-dtab="overview">Overview</button>
+    <button class="dtab" data-dtab="agents">Agent Details</button>
+    <button class="dtab" data-dtab="headers">Raw Headers</button>
+  </div>
+  <div class="drawer-body">
+    <div class="dtab-pane active" id="dtab-overview">
+      <div class="verdict-banner" id="d-verdict-banner">
+        <span class="vb-label" id="d-verdict-label">—</span>
+        <span class="vb-score" id="d-score-label">Score: —</span>
+      </div>
+      <div class="mini-grid">
+        <div class="mini-metric"><div class="mm-label">Score</div><div class="mm-val" id="dm-score">—</div></div>
+        <div class="mini-metric"><div class="mm-label">Confidence</div><div class="mm-val" id="dm-conf">—</div></div>
+        <div class="mini-metric"><div class="mm-label">Folder</div><div class="mm-val" id="dm-folder">—</div></div>
+        <div class="mini-metric"><div class="mm-label">Action</div><div class="mm-val" id="dm-action">—</div></div>
+      </div>
+      <div id="d-rule"></div>
+    </div>
+    <div class="dtab-pane" id="dtab-agents">
+      <div id="d-agents-content">
+        <div class="empty-state"><div class="empty-state-icon">&#9634;</div><div class="empty-state-title">No agent data</div></div>
+      </div>
+    </div>
+    <div class="dtab-pane" id="dtab-headers">
+      <div class="body-preview" id="d-headers-content">No header data available.</div>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+'use strict';
+
+const API = 'http://localhost:8765';
+
+// ── Fetch helpers ────────────────────────────────────────
+async function apiFetch(path, method) {
+  const r = await fetch(API + path, { method: method || 'GET' });
+  return r.json();
+}
+
+async function fetchDashboard() {
+  try {
+    const data = await apiFetch('/api/dashboard');
+    dispatch({ type:'dashboardData', payload: data });
+  } catch(e) {
+    dispatch({ type:'dashboardData', payload:{
+      stats:{ total:0, danger:0, suspicious:0, safe:0, avg_score:0 }, recent:[],
+      error: 'Server offline — run: python server.py  (' + e.message + ')'
+    }});
+  }
+}
+
+async function fetchLaunch() {
+  dispatch({ type:'launchProgress', payload:{ message:'Fetching 5 emails from Gmail… (30–60s)' } });
+  try {
+    const data = await apiFetch('/api/launch', 'POST');
+    dispatch({ type:'launchResult', payload: data.results ? data : { error: data.error||'No results' } });
+  } catch(e) {
+    dispatch({ type:'launchResult', payload:{ error:'Server offline — run: python server.py  (' + e.message + ')' } });
+  }
+}
+
+// VS Code API shim — routes postMessage calls to the fetch API
+const vscode = { postMessage: function(m) {
+  switch(m.type) {
+    case 'ready': case 'refresh': fetchDashboard(); break;
+    case 'launchAnalysis':        fetchLaunch();    break;
+    case 'getBlacklist':
+      dispatch({ type:'blacklistData', payload:{ entries: blEntries } }); break;
+    case 'analyze':
+      dispatch({ type:'analysisStart', payload:{} });
+      setTimeout(() => dispatch({ type:'analysisResult',
+        payload:{ error:'Manual analysis not supported in preview — use the VS Code extension.' } }), 200);
+      break;
+    case 'addBlacklist':
+      blEntries.unshift({ id: Date.now().toString(36), value: m.payload.value,
+        category: m.payload.category, reason: m.payload.reason||'—', addedAt: new Date().toISOString() });
+      dispatch({ type:'blacklistUpdated', payload:{ entries: blEntries } }); break;
+    case 'removeBlacklist':
+      blEntries = blEntries.filter(e => e.id !== m.payload.id);
+      dispatch({ type:'blacklistUpdated', payload:{ entries: blEntries } }); break;
+  }
+}};
+
+function dispatch(msg) {
+  window.dispatchEvent(new MessageEvent('message', { data: msg }));
+}
+
+let blEntries = [];
+
+// ── State ────────────────────────────────────────────────
+let allEmails = [];
+let stats     = { total:0, danger:0, suspicious:0, safe:0, avg_score:0 };
+let filter    = 'ALL';
+let analyzing = false;
+let launching = false;
+
+// ── Navigation ───────────────────────────────────────────
+function showPane(id) {
+  document.querySelectorAll('.tab-pane').forEach(p => p.classList.remove('active'));
+  document.getElementById('pane-' + id).classList.add('active');
+  document.querySelectorAll('.nav-item[data-nav]').forEach(n =>
+    n.classList.toggle('active', n.dataset.nav === id)
+  );
+  document.getElementById('filter-bar').style.display = id === 'overview' ? 'flex' : 'none';
+  document.getElementById('page-title').textContent =
+    id === 'overview' ? 'Dashboard' : id === 'analyze' ? 'Analyze Email' : 'Blacklist';
+  if (id === 'blacklist') vscode.postMessage({ type: 'getBlacklist' });
+}
+
+document.querySelectorAll('.nav-item[data-nav]').forEach(btn =>
+  btn.addEventListener('click', () => showPane(btn.dataset.nav))
+);
+
+// ── Filter tabs ──────────────────────────────────────────
+document.querySelectorAll('.ftab').forEach(t =>
+  t.addEventListener('click', () => {
+    document.querySelectorAll('.ftab').forEach(x => x.classList.remove('active'));
+    t.classList.add('active');
+    filter = t.dataset.filter;
+    renderTable();
+  })
+);
+
+// ── Refresh ──────────────────────────────────────────────
+function doRefresh() {
+  vscode.postMessage({ type:'refresh' });
+  document.getElementById('last-upd').textContent = 'Refreshing...';
+}
+document.getElementById('btn-refresh').addEventListener('click', doRefresh);
+document.getElementById('btn-refresh-side').addEventListener('click', doRefresh);
+
+// ── Launch ───────────────────────────────────────────────
+document.getElementById('btn-launch').addEventListener('click', () => {
+  if (launching) return;
+  launching = true;
+  const btn = document.getElementById('btn-launch');
+  btn.textContent = '⏳ Analyzing...';
+  btn.disabled = true;
+  vscode.postMessage({ type:'launchAnalysis' });
+});
+
+// ── Analyze ──────────────────────────────────────────────
+document.getElementById('btn-analyze').addEventListener('click', () => {
+  if (analyzing) return;
+  const content = document.getElementById('email-input').value.trim();
+  if (!content) return;
+  analyzing = true;
+  document.getElementById('btn-analyze').textContent = 'Analyzing...';
+  document.getElementById('btn-analyze').disabled = true;
+  resetPipeline(); startPipelineAnimation();
+  vscode.postMessage({ type:'analyze', payload:{ content, isPath: document.querySelector('input[name="itype"]:checked').value === 'path' } });
+});
+
+document.getElementById('btn-clear-analyze').addEventListener('click', () => {
+  document.getElementById('email-input').value = '';
+  document.getElementById('analyze-result').innerHTML = '';
+  resetPipeline();
+});
+
+// ── Blacklist ────────────────────────────────────────────
+document.getElementById('btn-bl-add').addEventListener('click', () => {
+  const value    = document.getElementById('bl-value').value.trim();
+  const category = document.getElementById('bl-cat').value;
+  const reason   = document.getElementById('bl-reason').value.trim();
+  if (!value) return;
+  vscode.postMessage({ type:'addBlacklist', payload:{ value, category, reason } });
+  document.getElementById('bl-value').value  = '';
+  document.getElementById('bl-reason').value = '';
+});
+window.removeEntry = id => vscode.postMessage({ type:'removeBlacklist', payload:{ id } });
+
+// ── Drawer ───────────────────────────────────────────────
+function openDrawer(email) {
+  const name = (email.from||'').replace(/<[^>]*>/, '').trim();
+  const initials = name.split(/\s+/).slice(0,2).map(w=>w[0]||'').join('').toUpperCase()||'?';
+  document.getElementById('d-avatar').textContent  = initials.slice(0,2);
+  document.getElementById('d-name').textContent    = name||'—';
+  document.getElementById('d-email').textContent   = ((email.from||'').match(/<([^>]+)>/)||['',''])[1]||email.from||'—';
+  document.getElementById('d-subject').textContent = email.subject||'(no subject)';
+  document.getElementById('d-time').textContent    = fmtTime(email.timestamp);
+
+  const vc  = (email.verdict||'').toLowerCase();
+  const cls = vc==='danger'?'danger':vc==='suspicious'?'suspicious':'safe';
+  document.getElementById('d-verdict-banner').className = 'verdict-banner ' + cls;
+  const lbl = document.getElementById('d-verdict-label');
+  lbl.className   = 'vb-label ' + cls;
+  lbl.textContent = email.verdict||'—';
+  document.getElementById('d-score-label').textContent = 'Score ' + (email.score!=null?email.score.toFixed(1):'—') + '/100';
+
+  document.getElementById('dm-score').textContent  = email.score!=null ? email.score.toFixed(1)+'/100' : '—';
+  document.getElementById('dm-conf').textContent   = email.confidence!=null ? Math.round(email.confidence*100)+'%' : '—';
+  document.getElementById('dm-folder').textContent = email.folder||'INBOX';
+  document.getElementById('dm-action').textContent = email.action||'—';
+
+  const ruleEl = document.getElementById('d-rule');
+  ruleEl.innerHTML = email.hard_rule
+    ? '<div class="err-pill" style="margin-bottom:10px">⚠ Rule: '+esc(email.hard_rule.slice(0,80))+'</div>' : '';
+
+  renderDrawerAgents(email.agents||[]);
+  document.getElementById('d-headers-content').textContent =
+    email.headers||email.raw_headers||'No header data available.';
+
+  setDrawerTab('overview');
+  document.getElementById('email-drawer').classList.add('open');
+  document.getElementById('drawer-overlay').classList.add('show');
+}
+
+function closeDrawer() {
+  document.getElementById('email-drawer').classList.remove('open');
+  document.getElementById('drawer-overlay').classList.remove('show');
+}
+
+document.getElementById('btn-drawer-close').addEventListener('click', closeDrawer);
+document.getElementById('drawer-overlay').addEventListener('click', closeDrawer);
+document.querySelectorAll('.dtab').forEach(t =>
+  t.addEventListener('click', () => setDrawerTab(t.dataset.dtab))
+);
+
+function setDrawerTab(id) {
+  document.querySelectorAll('.dtab').forEach(t => t.classList.toggle('active', t.dataset.dtab===id));
+  document.querySelectorAll('.dtab-pane').forEach(p => p.classList.remove('active'));
+  const pane = document.getElementById('dtab-'+id);
+  if (pane) pane.classList.add('active');
+}
+
+function renderDrawerAgents(agents) {
+  const el = document.getElementById('d-agents-content');
+  if (!agents.length) {
+    el.innerHTML='<div class="empty-state"><div class="empty-state-icon">&#9634;</div><div class="empty-state-title">No agent data</div></div>';
+    return;
+  }
+  el.innerHTML = agents.map(a => {
+    const sc    = a.score!=null ? a.score : null;
+    const label = sc!=null ? sc+'/100' : (a.verdict||'—');
+    const color = sc!=null ? (sc>=70?'var(--danger)':sc>=40?'var(--sus)':'var(--safe)') : 'var(--text-2)';
+    const w     = sc!=null ? Math.min(100,sc)+'%' : '0%';
+    return '<div class="agent-row">'+
+      '<div class="agent-top"><span class="agent-name">'+esc(a.name||a.agent||'Agent')+'</span><span class="agent-score" style="color:'+color+'">'+esc(label)+'</span></div>'+
+      (sc!=null?'<div class="bar-track"><div class="bar-fill" style="width:'+w+'"></div></div>':'')+
+      (a.verdict||a.detail?'<div class="agent-sub">'+esc(a.verdict||a.detail||'')+'</div>':'')+
+    '</div>';
+  }).join('');
+}
+
+// ── Pipeline ─────────────────────────────────────────────
+const PIPE_IDS = ['auth','url','nlp','sandbox','scoring'];
+let pipeTimer=null, pipeIdx=0;
+
+function resetPipeline() {
+  clearTimeout(pipeTimer); pipeIdx=0;
+  PIPE_IDS.forEach(id => {
+    const el=document.getElementById('pipe-'+id); if(el) el.className='pipe-step';
+    const sc=document.getElementById('pipe-'+id+'-score'); if(sc) sc.textContent='';
+  });
+}
+
+function startPipelineAnimation() { pipeIdx=0; advancePipe(); }
+
+function advancePipe() {
+  if (pipeIdx>=PIPE_IDS.length) return;
+  const el=document.getElementById('pipe-'+PIPE_IDS[pipeIdx]);
+  if(el) el.className='pipe-step running';
+  pipeIdx++;
+  pipeTimer=setTimeout(advancePipe, 800);
+}
+
+function setPipelineDone(agents) {
+  clearTimeout(pipeTimer);
+  PIPE_IDS.forEach(id => { const el=document.getElementById('pipe-'+id); if(el) el.className='pipe-step done'; });
+  const nm={auth:'auth',url:'url',nlp:'nlp',sandbox:'sandbox',scoring:'scoring',score:'scoring'};
+  (agents||[]).forEach(a => {
+    const key=nm[(a.name||a.agent||'').toLowerCase()]; if(!key) return;
+    const sc=document.getElementById('pipe-'+key+'-score');
+    if(sc&&a.score!=null) sc.textContent=a.score+'/100';
+  });
+}
+
+// ── Message listener ─────────────────────────────────────
+window.addEventListener('message', e => {
+  const m=e.data;
+  switch(m.type) {
+
+    case 'dashboardData':
+      stats     = m.payload.stats  || stats;
+      allEmails = m.payload.recent || [];
+      renderKPIs(); drawDonut(); renderAgentBars(); renderTable(); buildTimeline();
+      if (m.payload.error) {
+        document.getElementById('last-upd').textContent = '⚠ ' + m.payload.error.slice(0,80);
+      } else {
+        document.getElementById('last-upd').textContent = 'Updated ' + new Date().toLocaleTimeString();
+      }
+      break;
+
+    case 'blacklistData': case 'blacklistUpdated':
+      renderBlacklist(m.payload.entries||[]);
+      break;
+
+    case 'analysisStart':
+      document.getElementById('analyze-result').innerHTML=
+        '<div class="loading"><div class="spinner"></div>Running analysis pipeline...</div>';
+      break;
+
+    case 'analysisResult':
+      analyzing=false;
+      { const b=document.getElementById('btn-analyze'); b.textContent='Analyze'; b.disabled=false; }
+      setPipelineDone(m.payload&&m.payload.agents?m.payload.agents:[]);
+      renderAnalysisResult(m.payload);
+      break;
+
+    case 'launchProgress':
+      document.getElementById('last-upd').textContent=m.payload.message||'Analyzing...';
+      break;
+
+    case 'launchResult':
+      launching=false;
+      { const b=document.getElementById('btn-launch'); b.textContent='▶ Analyze Last 5'; b.disabled=false; }
+      if (m.payload.error) {
+        document.getElementById('last-upd').textContent='⚠ '+m.payload.error.slice(0,80);
+      } else {
+        const fresh=m.payload.results||[];
+        const ids=new Set(fresh.map(x=>x.id));
+        allEmails=[...fresh,...allEmails.filter(x=>!ids.has(x.id))];
+        rebuildStats();
+        renderKPIs(); drawDonut(); renderTable(); buildTimeline(); renderAgentBars();
+        document.getElementById('last-upd').textContent=
+          'Analyzed '+fresh.length+' email'+(fresh.length!==1?'s':'')+' — '+new Date().toLocaleTimeString();
+      }
+      break;
+  }
+});
+
+// ── Render: KPIs ─────────────────────────────────────────
+function renderKPIs() {
+  const t=stats.total||0;
+  setText('kpi-total',      fmt(t));
+  setText('kpi-avg',        stats.avg_score||0);
+  setText('kpi-danger',     fmt(stats.danger));
+  setText('kpi-sus',        fmt(stats.suspicious));
+  setText('kpi-safe',       fmt(stats.safe));
+  setText('kpi-danger-pct', pct(stats.danger,t)+' of total');
+  setText('kpi-sus-pct',    pct(stats.suspicious,t)+' of total');
+  setText('kpi-safe-pct',   pct(stats.safe,t)+' of total');
+}
+
+// ── Render: Donut ─────────────────────────────────────────
+function drawDonut() {
+  const canvas=document.getElementById('donut');
+  const ctx=canvas.getContext('2d');
+  const cx=80,cy=80,R=66,r=38;
+  ctx.clearRect(0,0,160,160);
+  const total=stats.total||0;
+  const segs=[
+    {v:stats.danger,    c:'#c0395e'},
+    {v:stats.suspicious,c:'#b45309'},
+    {v:stats.safe,      c:'#2e7d52'},
+  ].filter(s=>s.v>0);
+
+  if (!total) {
+    ctx.beginPath(); ctx.arc(cx,cy,R,0,Math.PI*2); ctx.arc(cx,cy,r,0,Math.PI*2,true);
+    ctx.fillStyle='#e8edf2'; ctx.fill();
+    ctx.fillStyle='#8ba8c4'; ctx.font='11px sans-serif';
+    ctx.textAlign='center'; ctx.textBaseline='middle';
+    ctx.fillText('No data',cx,cy);
+    document.getElementById('donut-legend').innerHTML=''; return;
+  }
+
+  const GAP=0.03; let angle=-Math.PI/2;
+  for (const s of segs) {
+    const sw=(s.v/total)*Math.PI*2-GAP;
+    ctx.beginPath();
+    ctx.moveTo(cx+R*Math.cos(angle),cy+R*Math.sin(angle));
+    ctx.arc(cx,cy,R,angle,angle+sw);
+    ctx.arc(cx,cy,r,angle+sw,angle,true);
+    ctx.closePath(); ctx.fillStyle=s.c; ctx.fill();
+    angle+=sw+GAP;
+  }
+
+  ctx.fillStyle='#0d1b2a'; ctx.font='bold 18px sans-serif';
+  ctx.textAlign='center'; ctx.textBaseline='middle';
+  ctx.fillText(fmtK(total),cx,cy-7);
+  ctx.fillStyle='#5a7a99'; ctx.font='10px sans-serif';
+  ctx.fillText('total',cx,cy+10);
+
+  document.getElementById('donut-legend').innerHTML=[
+    {lbl:'DANGER',     v:stats.danger,     stroke:'#c0395e',bg:'#fce4ef'},
+    {lbl:'SUSPICIOUS', v:stats.suspicious, stroke:'#b45309',bg:'#fef3e2'},
+    {lbl:'SAFE',       v:stats.safe,       stroke:'#2e7d52',bg:'#e8f5ed'},
+  ].map(i=>
+    '<div class="legend-row">'+
+      '<div style="display:flex;align-items:center;flex:1">'+
+        '<div class="legend-dot" style="background:'+i.bg+';border:1.5px solid '+i.stroke+'"></div>'+
+        '<span class="legend-label">'+i.lbl+'</span>'+
+      '</div>'+
+      '<span class="legend-count">'+fmt(i.v)+'</span>'+
+      '<span class="legend-pct">'+pct(i.v,total)+'</span>'+
+    '</div>'
+  ).join('');
+}
+
+// ── Render: Agent bars ────────────────────────────────────
+function renderAgentBars() {
+  const avg=stats.avg_score||0;
+  const rows=[
+    {name:'Auth',    score:Math.min(100,Math.round(avg*0.9)), hint:'SPF / DKIM / DMARC'},
+    {name:'URL',     score:Math.min(100,Math.round(avg*1.1)), hint:'Link reputation'},
+    {name:'NLP/BEC', score:Math.min(100,Math.round(avg*0.8)), hint:'Content analysis'},
+    {name:'Sandbox', score:Math.min(100,Math.round(avg*0.5)), hint:'Attachment scan'},
+  ];
+  document.getElementById('agent-bars').innerHTML=rows.map(r=>{
+    const color=r.score>=70?'var(--danger)':r.score>=40?'var(--sus)':'var(--safe)';
+    return '<div class="agent-row">'+
+      '<div class="agent-top"><span class="agent-name">'+r.name+'</span><span class="agent-score" style="color:'+color+'">'+r.score+'/100</span></div>'+
+      '<div class="agent-sub">'+r.hint+'</div>'+
+      '<div class="bar-track"><div class="bar-fill" style="width:'+r.score+'%"></div></div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Render: Timeline ─────────────────────────────────────
+function buildTimeline() {
+  const wrap=document.getElementById('timeline-wrap');
+  const days=[]; const now=new Date();
+  for(let i=6;i>=0;i--){const d=new Date(now);d.setDate(d.getDate()-i);d.setHours(0,0,0,0);days.push({date:d,danger:0,sus:0,safe:0});}
+  allEmails.forEach(e=>{
+    const ts=e.timestamp?(typeof e.timestamp==='number'?new Date(e.timestamp*1000):new Date(e.timestamp)):null;
+    if(!ts||isNaN(ts)) return;
+    const day=days.find(d=>ts>=d.date&&ts<new Date(d.date.getTime()+86400000));
+    if(!day) return;
+    if(e.verdict==='DANGER') day.danger++;
+    else if(e.verdict==='SUSPICIOUS') day.sus++;
+    else day.safe++;
+  });
+  const maxT=Math.max(...days.map(d=>d.danger+d.sus+d.safe),1);
+  wrap.innerHTML=days.map(d=>{
+    const hD=Math.round((d.danger/maxT)*70), hS=Math.round((d.sus/maxT)*70), hF=Math.round((d.safe/maxT)*70);
+    const total=d.danger+d.sus+d.safe;
+    const label=d.date.toLocaleDateString(undefined,{weekday:'short'});
+    return '<div class="tbar-group">'+
+      '<div class="tbar-stack">'+
+        (hD?'<div class="tbar-seg" style="height:'+hD+'px;background:#fce4ef;flex-shrink:0"></div>':'')+
+        (hS?'<div class="tbar-seg" style="height:'+hS+'px;background:#fef3e2;flex-shrink:0"></div>':'')+
+        (hF?'<div class="tbar-seg" style="height:'+hF+'px;background:#e8f5ed;flex-shrink:0"></div>':'')+
+        (!total?'<div class="tbar-seg" style="height:4px;background:var(--border);flex-shrink:0"></div>':'')+
+      '</div>'+
+      '<div class="tbar-label">'+label+'</div>'+
+    '</div>';
+  }).join('');
+}
+
+// ── Render: Table ────────────────────────────────────────
+function renderTable() {
+  const filtered=filter==='ALL'?allEmails:allEmails.filter(e=>e.verdict===filter);
+  const tbody=document.getElementById('email-tbody');
+  document.getElementById('table-count').textContent=filtered.length+' record'+(filtered.length!==1?'s':'');
+  if(!filtered.length){
+    tbody.innerHTML='<tr><td class="empty" colspan="6">No records'+(filter!=='ALL'?' for filter: '+filter:'')+'</td></tr>';
+    return;
+  }
+  tbody.innerHTML=filtered.map((e,idx)=>{
+    const bc=e.verdict==='DANGER'?'b-danger':e.verdict==='SUSPICIOUS'?'b-sus':'b-safe';
+    const sc=typeof e.score==='number'?e.score.toFixed(1):'—';
+    const sc2=e.verdict==='DANGER'?'var(--danger)':e.verdict==='SUSPICIOUS'?'var(--sus)':'var(--safe)';
+    return '<tr data-idx="'+idx+'">'+
+      '<td class="mono" title="'+esc(e.from)+'">'+esc(trunc(e.from,32))+'</td>'+
+      '<td title="'+esc(e.subject)+'">'+esc(trunc(e.subject,45))+'</td>'+
+      '<td><span class="badge '+bc+'">'+e.verdict+'</span></td>'+
+      '<td style="color:'+sc2+';font-family:var(--mono)">'+sc+'</td>'+
+      '<td><span class="folder-tag">'+esc(e.folder||'INBOX')+'</span></td>'+
+      '<td style="color:var(--text-3)">'+fmtTime(e.timestamp)+'</td>'+
+    '</tr>';
+  }).join('');
+  tbody.querySelectorAll('tr[data-idx]').forEach(tr=>
+    tr.addEventListener('click',()=>{ const em=filtered[+tr.dataset.idx]; if(em) openDrawer(em); })
+  );
+}
+
+// ── Render: Blacklist ────────────────────────────────────
+function renderBlacklist(entries) {
+  const tbody=document.getElementById('bl-tbody');
+  const tagList=document.getElementById('bl-tag-list');
+  if(!entries.length){
+    tbody.innerHTML='<tr><td class="empty" colspan="5">Blacklist is empty</td></tr>';
+    tagList.innerHTML=''; return;
+  }
+  const cc={domain:'var(--accent)',ip:'var(--sus)',email:'var(--safe)'};
+  tbody.innerHTML=entries.map(e=>
+    '<tr>'+
+      '<td class="mono">'+esc(e.value)+'</td>'+
+      '<td style="color:'+(cc[e.category]||'var(--text-2)')+'">'+esc(e.category)+'</td>'+
+      '<td title="'+esc(e.reason)+'">'+esc(trunc(e.reason,50))+'</td>'+
+      '<td style="color:var(--text-3)">'+fmtTime(e.addedAt)+'</td>'+
+      '<td><button class="btn btn-del btn-sm" onclick="removeEntry(\''+esc(e.id)+'\')">Remove</button></td>'+
+    '</tr>'
+  ).join('');
+  tagList.innerHTML=entries.map(e=>
+    '<div class="bl-tag">'+
+      '<span style="font-size:10px;color:'+(cc[e.category]||'var(--text-3)')+'">'+esc(e.category)+'</span>'+
+      '<span>'+esc(trunc(e.value,28))+'</span>'+
+      '<button class="bl-tag-x" onclick="removeEntry(\''+esc(e.id)+'\')" title="Remove">&#10005;</button>'+
+    '</div>'
+  ).join('');
+}
+
+// ── Render: Analysis result ──────────────────────────────
+function renderAnalysisResult(r) {
+  const el=document.getElementById('analyze-result');
+  if(!r||r.error){el.innerHTML='<div class="err-box">'+esc((r&&r.error)||'Unknown error')+'</div>';return;}
+  const bc=r.verdict==='DANGER'?'b-danger':r.verdict==='SUSPICIOUS'?'b-sus':'b-safe';
+  const cards=(r.agents||[]).map(a=>{
+    const val=a.score!=null?a.score+'/100':(a.verdict||'—');
+    const color=a.score>=70?'var(--danger)':a.score>=40?'var(--sus)':'var(--safe)';
+    return '<div class="ag-card">'+
+      '<div class="ag-name">'+esc(a.name||a.agent||'Agent')+'</div>'+
+      '<div class="ag-val" style="color:'+color+'">'+esc(val)+'</div>'+
+      (a.verdict||a.detail?'<div class="ag-detail" title="'+esc(a.detail||'')+'">'+esc(a.verdict||a.detail||'')+'</div>':'')+
+    '</div>';
+  }).join('');
+  el.innerHTML='<div class="result-box">'+
+    '<div class="result-head">'+
+      '<span class="badge '+bc+'" style="font-size:13px;padding:4px 12px">'+r.verdict+'</span>'+
+      (r.action?'<span class="action-pill">'+esc(r.action)+'</span>':'')+
+      '<div class="result-meta">Score: <span>'+r.score+'/100</span>'+(r.hard_rule?' | Rule: <span>'+esc(r.hard_rule.slice(0,60))+'</span>':'')+' </div>'+
+    '</div>'+
+    (cards?'<div class="result-body"><div class="panel-title" style="margin-bottom:10px">Agent Breakdown</div><div class="agent-grid">'+cards+'</div></div>':'')+
+  '</div>';
+}
+
+// ── Helpers ──────────────────────────────────────────────
+function rebuildStats() {
+  stats.total      = allEmails.length;
+  stats.danger     = allEmails.filter(e=>e.verdict==='DANGER').length;
+  stats.suspicious = allEmails.filter(e=>e.verdict==='SUSPICIOUS').length;
+  stats.safe       = allEmails.filter(e=>e.verdict==='SAFE').length;
+}
+function setText(id,v){document.getElementById(id).textContent=v;}
+function esc(s){return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');}
+function trunc(s,n){s=String(s||'');return s.length>n?s.slice(0,n)+'…':s;}
+function fmt(n){return Number(n||0).toLocaleString();}
+function fmtK(n){return n>=1000?(n/1000).toFixed(1)+'k':String(n);}
+function pct(n,t){return t?Math.round(n/t*100)+'%':'0%';}
+function fmtTime(ts){
+  if(!ts) return '—';
+  try{const d=typeof ts==='number'?new Date(ts*1000):new Date(ts);
+    return d.toLocaleString(undefined,{month:'short',day:'numeric',hour:'2-digit',minute:'2-digit'});}
+  catch{return String(ts).slice(0,16);}
+}
+
+// ── Boot ─────────────────────────────────────────────────
+vscode.postMessage({ type:'ready' });
+})();
+</script>
+</body>
+</html>
